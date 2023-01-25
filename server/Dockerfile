@@ -18,8 +18,6 @@ LABEL alias="yourtool"
 
 RUN go mod download
 
-
-
 RUN go build -o /docker-gs-ping
 
 EXPOSE 50051
