@@ -1,4 +1,4 @@
-module grpc-server
+module get-server-grpc
 
 go 1.19
 

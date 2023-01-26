@@ -51,7 +51,8 @@ Set up base ambassador example app
 
 1) kubectl apply -f client.yaml
 2) kubectl apply -f server.yaml
-3) curl -Lki https://$LB_ENDPOINT/api/v1/grpc
+3) kubectl apply -f get-server.yaml
+4) curl -Lki https://$LB_ENDPOINT/api/v1/grpc
 
 
 
