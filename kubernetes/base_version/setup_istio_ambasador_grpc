@@ -1,4 +1,6 @@
 
+PWD  ->  ..../kubernetes-istio-ambassador/kubernetes/base_version
+
 
 
 INSTALL  ISTIOD BY HELM - https://istio.io/latest/docs/setup/install/helm/

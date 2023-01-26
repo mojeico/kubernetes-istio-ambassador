@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: service-container
-          image: server-grpc:v1.1
+          image: server-grpc:v1
           ports:
             - name: server-port
               containerPort: 50051

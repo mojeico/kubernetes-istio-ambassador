@@ -14,7 +14,7 @@ import (
 
 const (
 	PORT        = ":50051"
-	GET_ADDRESS = "get-server-service:50052"
+	GET_ADDRESS = "get-server-grpc:50052"
 	//GET_ADDRESS = ":50052"
 )
 

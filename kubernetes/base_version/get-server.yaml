@@ -26,7 +26,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: get-server-service
+  name: get-server-grpc
 spec:
   selector:
     app: get-server
