@@ -20,12 +20,13 @@ func GetPost(c *fiber.Ctx) error {
 	//fmt.Println("return 200")
 	//return c.JSON(fiber.Map{"response": "return from v1 - 200"})
 
-	a := c.GetReqHeaders()
-	println(a)
 	// 500 Service Unavailable - v2
-	fmt.Println("----- v2 ---- ")
-	fmt.Println("return 500")
-	return fiber.ErrInternalServerError
+	//fmt.Println("----- v2 ---- ")
+	//fmt.Println("return 500")
+	//return fiber.ErrInternalServerError
+
+	fmt.Println("---- Mirroring ----")
+	return c.JSON(fiber.Map{"INFO": "INFO"})
 
 	// We got error in v2 and send request in v3
 	//fmt.Println("----- v3 ---- ")
