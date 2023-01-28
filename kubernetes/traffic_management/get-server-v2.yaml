@@ -1,22 +1,24 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: get-server-deployment
+  name: get-server-deployment-v2
   labels:
     app: get-server
 spec:
   selector:
     matchLabels:
       app: get-server
+      version: v2
   replicas: 1
   template:
     metadata:
       labels:
         app: get-server
+        version: v2
     spec:
       containers:
         - name: get-server-container
-          image: get-server-grpc:v1
+          image: get-server-grpc:v2
           ports:
             - name: get-server-port
               containerPort: 50052

@@ -20,7 +20,7 @@ type TodoServer struct {
 }
 
 func (s *TodoServer) CreateTodo(ctx context.Context, in *pb.NewTodo) (*pb.Todo, error) {
-	log.Printf("Received: %v", in.GetName())
+	log.Printf("--- v1 ---")
 	todo := &pb.Todo{
 		Name:        in.GetName(),
 		Description: in.GetDescription(),

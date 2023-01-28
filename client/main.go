@@ -58,26 +58,17 @@ func RunGRPC(fiber *fiber.Ctx) error {
 	defer cancel()
 
 	todos := []TodoTask{
-		{Name: "Code review", Description: "Review new feature code", Done: false},
-		{Name: "Make YouTube Video", Description: "Start Go for beginners series", Done: false},
-		{Name: "Go to the gym", Description: "Leg day", Done: false},
-		{Name: "Buy groceries", Description: "Buy tomatoes, onions, mangos", Done: false},
 		{Name: "Meet with mentor", Description: "Discuss blockers in my project", Done: false},
 	}
 
 	for _, todo := range todos {
-		res, err := c.CreateTodo(ctx, &pb.NewTodo{Name: todo.Name, Description: todo.Description, Done: todo.Done})
+		_, err := c.CreateTodo(ctx, &pb.NewTodo{Name: todo.Name, Description: todo.Description, Done: todo.Done})
 
 		if err != nil {
 			log.Fatalf("could not create user: %v", err)
 		}
 
-		log.Printf(`
-           ID : %s
-           Name : %s
-           Description : %s
-           Done : %v,
-       `, res.GetId(), res.GetName(), res.GetDescription(), res.GetDone())
+		log.Printf("messae was sent")
 	}
 
 	return nil

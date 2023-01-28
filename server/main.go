@@ -60,18 +60,13 @@ func (s *TodoServer) CreateTodo(ctx context.Context, in *pb.NewTodo) (*pb.Todo, 
 	}
 
 	for _, todo := range todos {
-		res, err := c.CreateTodo(ctx, &pb.NewTodo{Name: todo.Name, Description: todo.Description, Done: todo.Done})
+		_, err := c.CreateTodo(ctx, &pb.NewTodo{Name: todo.Name, Description: todo.Description, Done: todo.Done})
 
 		if err != nil {
 			log.Fatalf("could not create user: %v", err)
 		}
 
-		log.Printf(`
-           ID : %s
-           Name : %s
-           Description : %s
-           Done : %v,
-       `, res.GetId(), res.GetName(), res.GetDescription(), res.GetDone())
+		log.Printf("Message was sent from server to get server ")
 	}
 
 	return todo, nil
