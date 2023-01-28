@@ -4,15 +4,18 @@ metadata:
   name: server-deployment
   labels:
     app: server
+    version: v1
 spec:
   selector:
     matchLabels:
       app: server
+      version: v1
   replicas: 1
   template:
     metadata:
       labels:
         app: server
+        version: v1
     spec:
       containers:
         - name: service-container

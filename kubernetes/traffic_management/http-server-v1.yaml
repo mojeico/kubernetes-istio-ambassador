@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: http-server-deployment-v1
+  labels:
+    app: http-server-app
+    version: v1
+spec:
+  selector:
+    matchLabels:
+      app: http-server-app
+      version: v1
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: http-server-app
+        version: v1
+    spec:
+      containers:
+        - name: http-server-container
+          image: http-server:v1
+          ports:
+            - name: http-serv-port
+              containerPort: 3001
+      #restartPolicy: Never
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: http-server-service
+spec:
+  selector:
+    app: http-server-app
+  ports:
+    - port: 3001
+      targetPort: 3001

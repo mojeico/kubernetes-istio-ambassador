@@ -1,11 +1,13 @@
 package main
 
 import (
+	"bufio"
 	"context"
 	"fmt"
 	"github.com/gofiber/fiber/v2"
 	"google.golang.org/grpc"
 	"log"
+	"net/http"
 	"time"
 
 	pb "grpc-client/proto"
@@ -15,7 +17,7 @@ func main() {
 
 	app := fiber.New()
 
-	app.Get("/api/v1/post", GetPost)
+	app.Get("/api/v1/http", HttpRequest)
 	app.Get("/api/v1/grpc", RunGRPC)
 
 	// Start server on port 3000
@@ -23,8 +25,48 @@ func main() {
 
 }
 
-func GetPost(c *fiber.Ctx) error {
-	return c.JSON(fiber.Map{"error": "Post not found"})
+func HttpRequest(c *fiber.Ctx) error {
+
+	var err error
+	var resp *http.Response
+
+	EndUserHeader := c.GetReqHeaders()["End-User"]
+
+	if EndUserHeader != "" {
+		client := &http.Client{}
+		req, _ := http.NewRequest("GET", "http://http-server-service:3001/server/http", nil)
+		req.Header.Set("End-User", EndUserHeader)
+		resp, err = client.Do(req)
+	} else {
+		client := &http.Client{}
+		req, _ := http.NewRequest("GET", "http://http-server-service:3001/server/http", nil)
+		resp, err = client.Do(req)
+	}
+
+	if err != nil {
+		fmt.Println(err.Error())
+		return c.JSON(fiber.Map{"error": err.Error()})
+	}
+
+	var responseBody = ""
+
+	scanner := bufio.NewScanner(resp.Body)
+
+	for i := 0; scanner.Scan() && i < 5; i++ {
+		responseBody = scanner.Text()
+	}
+
+	if resp.StatusCode == 500 {
+		log.Println("-------")
+		log.Println(resp.StatusCode)
+		log.Println(responseBody)
+		log.Println("-------")
+	} else {
+		log.Println(responseBody)
+		log.Println(resp.StatusCode)
+	}
+
+	return c.JSON(fiber.Map{"error": responseBody})
 }
 
 const (
@@ -53,7 +95,7 @@ func RunGRPC(fiber *fiber.Ctx) error {
 
 	c := pb.NewTodoServiceClient(conn)
 
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
 
 	defer cancel()
 

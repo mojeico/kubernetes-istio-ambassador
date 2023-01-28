@@ -1,0 +1,53 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: http-server-destination-rule
+spec:
+  host: http-server-service
+  #host: service-name
+
+  # NOT WORK
+  #host: get-server.default.svc.cluster.local
+  #      app-name.namespace.svc.cluster.local
+  #host: echo.echo-grpc.svc.cluster.local
+  subsets:
+    - name: v1
+      labels:
+        version: v1
+    - name: v2
+      labels:
+        version: v2
+    - name: v3
+      labels:
+        version: v3
+
+---
+
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: http-server-virtual-service
+spec:
+  hosts:
+    - http-server-service
+  http:
+    # if we sent End-User header with value jason we get 500 error
+    - fault:
+        abort:
+          httpStatus: 500
+          percentage:
+            value: 100
+      match:
+      - headers:
+          end-user:
+            exact: jason
+      route:
+        - destination:
+            host: http-server-service
+            subset: v1
+    - route:
+        - destination:
+            host: http-server-service
+            subset: v1
+
+

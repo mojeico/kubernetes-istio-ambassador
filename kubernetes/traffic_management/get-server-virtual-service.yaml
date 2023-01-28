@@ -1,7 +1,7 @@
 apiVersion: networking.istio.io/v1alpha3
 kind: DestinationRule
 metadata:
-  name: echo-versions
+  name: get-server-grpc-destination-rule
 spec:
   host: get-server-grpc
   #host: service-name
@@ -23,7 +23,7 @@ spec:
 apiVersion: networking.istio.io/v1beta1
 kind: VirtualService
 metadata:
-  name: echo-weights
+  name: get-server-grpc-virtual-service
 spec:
   hosts:
     #host: service-name
@@ -40,3 +40,4 @@ spec:
             #host: service-name
             subset: v2
           weight: 90
+
