@@ -17,6 +17,7 @@ spec:
         app: client
         version: v1
     spec:
+      serviceAccountName: client-service-account
       containers:
         - name: client-container
           image: client-grpc:v1
@@ -35,6 +36,9 @@ spec:
     app: client
   ports:
     - port: 80
+      #default is TCP
+      appProtocol: http
+      protocol: TCP
       targetPort: 3000
 ---
 

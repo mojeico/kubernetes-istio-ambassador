@@ -2,6 +2,8 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: http-server-deployment-mirroring
+  # mirroring doesn't work if we turn on  PeerAuthentication ( security -> peer-authentication-with-mutual-TLS.yaml)
+  namespace: without-istio
   labels:
     app: http-server-app
     version: v0-mirroring

@@ -1,0 +1,48 @@
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: "allow-get-for-client"
+  namespace: default
+spec:
+  selector:
+    matchLabels:
+      app: client
+  action: ALLOW
+  rules:
+    - to:
+        - operation:
+            methods: ["GET"]
+
+---
+
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: client-service-account
+  labels:
+    account: client
+automountServiceAccountToken: true
+---
+
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: "http-server-app-allow"
+  namespace: default
+spec:
+  selector:
+    matchLabels:
+      app: http-server-app
+  action: ALLOW
+  rules:
+  - from:
+      # https://discuss.istio.io/t/authorization-policy-issue-with-503/4545
+      - source:
+          principals: ["cluster.local/ns/default/sa/client-service-account"]
+      #- source:
+      #  namespaces: ["default"]
+    to:
+    - operation:
+        methods: ["GET"]
+
+

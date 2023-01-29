@@ -34,12 +34,12 @@ func HttpRequest(c *fiber.Ctx) error {
 
 	if EndUserHeader != "" {
 		client := &http.Client{}
-		req, _ := http.NewRequest("GET", "http://http-server-service:3001/server/http", nil)
+		req, _ := http.NewRequest("GET", "http://http-server-service:80/server/http", nil)
 		req.Header.Set("End-User", EndUserHeader)
 		resp, err = client.Do(req)
 	} else {
 		client := &http.Client{}
-		req, _ := http.NewRequest("GET", "http://http-server-service:3001/server/http", nil)
+		req, _ := http.NewRequest("GET", "http://http-server-service:80/server/http", nil)
 		resp, err = client.Do(req)
 	}
 
