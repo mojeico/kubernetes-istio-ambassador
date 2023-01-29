@@ -38,4 +38,7 @@ spec:
         # container port - containerPort: 3001
         ports: ["3001"]
 
+        #when:
+        #  - key: request.headers[x-token]
+        #    notValues: [ "admin" ]
 

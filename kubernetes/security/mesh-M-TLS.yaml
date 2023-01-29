@@ -1,0 +1,9 @@
+# istioctl install -f ./mesh-M-TLS.yaml
+# todo in snd check how install by helm + terraform
+
+apiVersion: install.istio.io/v1alpha1
+kind: IstioOperator
+spec:
+  meshConfig:
+    meshMTLS:
+      minProtocolVersion: TLSV1_3
