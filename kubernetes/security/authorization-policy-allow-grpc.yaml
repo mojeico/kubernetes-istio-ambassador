@@ -1,0 +1,40 @@
+---
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: "grpc-server-allow"
+  namespace: default
+spec:
+  selector:
+    matchLabels:
+      app: server # (grcp server, not get-grpc-server)
+  action: ALLOW
+  rules:
+  - from:
+      # https://discuss.istio.io/t/authorization-policy-issue-with-503/4545
+      - source:
+          principals: ["cluster.local/ns/default/sa/client-service-account"]
+      #- source:
+      #  namespaces: ["default"]
+
+---
+
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: "grpc-get-server-allow"
+  namespace: default
+spec:
+  selector:
+    matchLabels:
+      app: get-server # (grpc get server )
+  action: ALLOW
+  rules:
+    - from:
+        # https://discuss.istio.io/t/authorization-policy-issue-with-503/4545
+        - source:
+            principals: ["cluster.local/ns/default/sa/grpc-server-service-account"]
+        #- source:
+        #  namespaces: ["default"]
+
+

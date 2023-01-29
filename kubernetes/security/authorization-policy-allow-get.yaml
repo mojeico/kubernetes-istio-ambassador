@@ -15,15 +15,6 @@ spec:
 
 ---
 
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  name: client-service-account
-  labels:
-    account: client
-automountServiceAccountToken: true
----
-
 apiVersion: security.istio.io/v1beta1
 kind: AuthorizationPolicy
 metadata:
@@ -44,5 +35,7 @@ spec:
     to:
     - operation:
         methods: ["GET"]
+        # container port - containerPort: 3001
+        ports: ["3001"]
 
 

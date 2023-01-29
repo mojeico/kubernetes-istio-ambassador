@@ -17,6 +17,7 @@ spec:
         app: server
         version: v1
     spec:
+      serviceAccountName: grpc-server-service-account
       containers:
         - name: service-container
           image: server-grpc:v1
@@ -24,6 +25,15 @@ spec:
             - name: server-port
               containerPort: 50051
       #restartPolicy: Never
+
+---
+
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: grpc-server-service-account
+automountServiceAccountToken: true
+
 
 ---
 apiVersion: v1
