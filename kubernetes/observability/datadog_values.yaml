@@ -1,0 +1,102 @@
+# Configure the node-based Agent
+
+targetSystem: "linux"
+
+datadog:
+
+  confd:
+    #####################################
+    ### SET UP FOR ISTIO  INTEGRATION ###
+    #####################################
+    # istio_mesh_endpoint: http://%%host%%:15020/stats/prometheus
+    istio.yaml: |-
+      ad_identifiers:
+        - proxyv2
+
+      init_config:
+      instances:
+        - use_openmetrics: true
+          send_histograms_buckets: true
+          istio_mesh_endpoint: http://%%host%%:15020/stats/prometheus
+      
+      tag_by_endpoint: false
+      exclude_labels:
+        - source_version
+        - destination_version
+        - source_canonical_revision
+        - destination_canonical_revision
+        - source_principal
+        - destination_principal
+        - source_cluster
+        - destination_cluster
+        - source_canonical_service
+        - destination_canonical_service
+        - source_workload_namespace
+        - destination_workload_namespace
+        - request_protocol
+        - connection_security_policy
+        - destination_service
+        - source_workload
+
+  #####################################
+  ### SET UP FOR ISTIO  INTEGRATION ###
+  #####################################
+
+  serviceMonitoring:
+    enabled: true
+  apiKey: 40d7533e4aa0fcd8de622630c5a8efff
+  # "Set up the Istio integration"
+  clusterName: kubernetes-istio
+  site:  us5.datadoghq.com
+
+  kubeStateMetricsCore:
+    enabled: true
+
+  clusterChecks:
+    enabled: true
+  # Receiving traces
+  apm:
+    enabled: true
+    port: 8126
+
+  logs:
+    enabled: true
+    containerCollectAll: true
+  acExclude: "name:datadog-agent name:datadog-cluster-agent"
+  # Enable the Process Agent and system probe
+  processAgent:
+    processCollection: true
+  networkMonitoring:
+    enabled: true
+
+# Configure the Cluster Agent
+clusterAgent:
+  enabled: true
+  replicas: 2
+  createPodDisruptionBudget: true
+  # Disable automatic sidecar injection for Datadog Agent pods
+  podAnnotations:
+    sidecar.istio.io/inject: "false"
+  metricsProvider:
+    enabled: true
+  admissionController:
+    enabled: true
+    mutateUnlabelled: false
+
+# Disable automatic sidecar injection for Datadog Agent pods
+agents:
+  # ?????????
+  #localService:
+  #  forceLocalServiceEnabled: true
+  # ?????????
+  podAnnotations:
+    sidecar.istio.io/inject: "false"
+
+
+#providers:
+  #gke:
+    # providers.gke.autopilot -- Enables Datadog Agent deployment on GKE Autopilot
+    #autopilot: false
+
+    # providers.gke.cos -- Enables Datadog Agent deployment on GKE with Container-Optimized OS (COS)
+    #cos: true
