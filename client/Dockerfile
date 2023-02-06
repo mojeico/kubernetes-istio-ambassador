@@ -2,24 +2,30 @@
 
 FROM golang:1.17-alpine
 
+
+#  docker build  . -t europe-west3-docker.pkg.dev/mojeico/client/client-grpc:v2
+#  docker push europe-west3-docker.pkg.dev/mojeico/client/client-grpc:v2
+
+
 WORKDIR /app
 
-COPY . ./
+COPY go.mod go.sum proto ./
 
-
-
-LABEL "com.example.vendor"="ACME Incorporated"
-LABEL com.example.label-with-value="foo"
-LABEL version="1.0"
-LABEL description="This text illustrates"
-LABEL alias="yourtool"
 
 
 RUN go mod download
 
+COPY . .
 
-RUN go build -o /docker-gs-ping
+# MAC OS M1 APPLE  -----RUN CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build -a -installsuffix cgo -o main ./cmd/app/main.go
+
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -installsuffix cgo  -o main ./main.go
+
+RUN chmod +x ./main
+
 
 EXPOSE 3000
 
-CMD [ "/docker-gs-ping" ]
+CMD ["./main"]
+
+

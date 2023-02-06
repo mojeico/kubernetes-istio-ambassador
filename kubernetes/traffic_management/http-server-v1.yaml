@@ -5,6 +5,9 @@ metadata:
   labels:
     app: http-server-app
     version: v1
+    #tags.datadoghq.com/env: snd
+    #tags.datadoghq.com/service: http-server-app
+    #tags.datadoghq.com/version: v1
 spec:
   selector:
     matchLabels:
@@ -13,16 +16,47 @@ spec:
   replicas: 1
   template:
     metadata:
+      annotations:
+        apm.datadoghq.com/env: '{"DD_ENV": "prod", "DD_SERVICE": "my-service", "DD_VERSION": "v1.1", "DD_TRACE_SAMPLING_RULES": "[]"}'
       labels:
+        admission.datadoghq.com/enabled: "true"
         app: http-server-app
         version: v1
+        #tags.datadoghq.com/env: snd
+        #tags.datadoghq.com/service: http-server-app
+        #tags.datadoghq.com/version: v1
     spec:
+      volumes:
+        - hostPath:
+            path: /var/run/datadog/
+          name: apmsocketpath
       containers:
         - name: http-server-container
-          image: http-server:v1
+          image: europe-west3-docker.pkg.dev/mojeico/client/http-server:v1
           ports:
             - name: http-serv-port
               containerPort: 3001
+          volumeMounts:
+            - name: apmsocketpath
+              mountPath: /var/run/datadog
+          env:
+            - name: DD_TRACE_STARTUP_LOGS
+              value: "true"
+
+            #- name: DD_AGENT_HOST
+            #  value: datadog-agent.datadog
+            #- name: DD_ENV
+            #  valueFrom:
+            #    fieldRef:
+            #      fieldPath: metadata.labels['tags.datadoghq.com/env']
+            #- name: DD_SERVICE
+            #  valueFrom:
+            #    fieldRef:
+            #      fieldPath: metadata.labels['tags.datadoghq.com/service']
+            #- name: DD_VERSION
+            #  valueFrom:
+            #    fieldRef:
+            #      fieldPath: metadata.labels['tags.datadoghq.com/version']
       #restartPolicy: Never
 
 ---

@@ -1,25 +1,30 @@
 # syntax=docker/dockerfile:1
 
+
+#  docker build . -t europe-west3-docker.pkg.dev/mojeico/client/server-grpc:v2
+#  docker push europe-west3-docker.pkg.dev/mojeico/client/server-grpc:v2
+
+
 FROM golang:1.17-alpine
+
 
 WORKDIR /app
 
-COPY . ./
-
-
-
-LABEL "com.example.vendor"="ACME Incorporated"
-LABEL com.example.label-with-value="foo"
-LABEL version="1.0"
-LABEL description="This text illustrates"
-LABEL alias="yourtool"
+COPY go.mod go.sum proto ./
 
 
 
 RUN go mod download
 
-RUN go build -o /docker-gs-ping
+COPY . .
+
+# MAC OS M1 APPLE  -----RUN CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build -a -installsuffix cgo -o main ./cmd/app/main.go
+
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -installsuffix cgo  -o main ./main.go
+
+RUN chmod +x ./main
+
 
 EXPOSE 50051
 
-CMD [ "/docker-gs-ping" ]
+CMD ["./main"]

@@ -6,14 +6,39 @@ import (
 	"fmt"
 	"github.com/gofiber/fiber/v2"
 	"google.golang.org/grpc"
+	"gopkg.in/DataDog/dd-trace-go.v1/profiler"
 	"log"
 	"net/http"
 	"time"
+
+	"gopkg.in/DataDog/dd-trace-go.v1/ddtrace/tracer"
 
 	pb "grpc-client/proto"
 )
 
 func main() {
+
+	tracer.Start()
+	defer tracer.Stop()
+
+	err := profiler.Start(
+		profiler.WithProfileTypes(
+			profiler.CPUProfile,
+			profiler.HeapProfile,
+
+			// The profiles below are disabled by
+			// default to keep overhead low, but
+			// can be enabled as needed.
+			// profiler.BlockProfile,
+			// profiler.MutexProfile,
+			// profiler.GoroutineProfile,
+		),
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	defer profiler.Stop()
 
 	app := fiber.New()
 

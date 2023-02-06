@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"gopkg.in/DataDog/dd-trace-go.v1/profiler"
 	"log"
 	"net"
 
@@ -9,6 +10,7 @@ import (
 	"google.golang.org/grpc"
 
 	pb "get-server-grpc/proto"
+	"gopkg.in/DataDog/dd-trace-go.v1/ddtrace/tracer"
 )
 
 const (
@@ -20,7 +22,7 @@ type TodoServer struct {
 }
 
 func (s *TodoServer) CreateTodo(ctx context.Context, in *pb.NewTodo) (*pb.Todo, error) {
-	log.Printf("--- v1 ---")
+	log.Printf("--- v22 ---")
 	todo := &pb.Todo{
 		Name:        in.GetName(),
 		Description: in.GetDescription(),
@@ -33,6 +35,28 @@ func (s *TodoServer) CreateTodo(ctx context.Context, in *pb.NewTodo) (*pb.Todo, 
 }
 
 func main() {
+
+	tracer.Start()
+	defer tracer.Stop()
+
+	err := profiler.Start(
+		profiler.WithProfileTypes(
+			profiler.CPUProfile,
+			profiler.HeapProfile,
+
+			// The profiles below are disabled by
+			// default to keep overhead low, but
+			// can be enabled as needed.
+			// profiler.BlockProfile,
+			// profiler.MutexProfile,
+			// profiler.GoroutineProfile,
+		),
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer profiler.Stop()
+
 	lis, err := net.Listen("tcp", PORT)
 
 	if err != nil {

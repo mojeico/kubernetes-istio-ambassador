@@ -8,3 +8,5 @@ metadata:
 spec:
   mtls:
     mode: STRICT
+
+# todo: how to enable STRICT mode only for default ns 

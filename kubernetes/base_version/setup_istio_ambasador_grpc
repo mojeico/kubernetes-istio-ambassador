@@ -12,7 +12,10 @@ INSTALL  ISTIOD BY HELM - https://istio.io/latest/docs/setup/install/helm/
 5) helm install istiod istio/istiod -n istio-system --wait -f ./istio/istio_values.yaml
 
 
-helm upgrade istiod istio/istiod -n istio-system -f ./istio/istio_values.yaml
+helm upgrade istiod -f ./istio/istio_values.yaml -n istio-system  istio/istiod
+
+
+
 helm list -n istio-system
 
 
@@ -53,7 +56,7 @@ Set up base ambassador example app
 
 1) kubectl apply -f client.yaml
 2) kubectl apply -f server.yaml
-3) kubectl apply -f get-server.yaml
+3) kubectl apply -f get-server-v1.yaml
 4) curl -Lki https://$LB_ENDPOINT/api/v1/grpc
 
 

@@ -57,12 +57,17 @@ spec:
             host: http-server-service
             #host: service-name
             subset: v1
-          weight: 50
+          weight: 30
         - destination:
             host: http-server-service
             #host: service-name
             subset: v3
-          weight: 50
+          weight: 40
+        - destination:
+            host: http-server-service
+            #host: service-name
+            subset: v2
+          weight: 30
       mirror:
         host: http-server-service
         subset: v0-mirroring

@@ -1,6 +1,24 @@
 # syntax=docker/dockerfile:1
 
-FROM golang:1.17-alpine
+
+#  docker build . -t europe-west3-docker.pkg.dev/mojeico/client/http-server:v1
+#  docker push europe-west3-docker.pkg.dev/mojeico/client/http-server:v1
+
+#  docker build . -t europe-west3-docker.pkg.dev/mojeico/client/http-server:v2
+#  docker push europe-west3-docker.pkg.dev/mojeico/client/http-server:v2
+
+#  docker build . -t europe-west3-docker.pkg.dev/mojeico/client/http-server:v3
+#  docker push europe-west3-docker.pkg.dev/mojeico/client/http-server:v3
+
+#  docker build . -t europe-west3-docker.pkg.dev/mojeico/client/http-server:v0-mirroring
+#  docker push europe-west3-docker.pkg.dev/mojeico/client/http-server:v0-mirroring
+
+
+#  docker build . -t europe-west3-docker.pkg.dev/mojeico/client/http-server:v0-exec1
+#  docker push europe-west3-docker.pkg.dev/mojeico/client/http-server:v0-exec1
+
+
+FROM golang:1.17
 
 WORKDIR /app
 
@@ -18,7 +36,7 @@ LABEL alias="yourtool"
 RUN go mod download
 
 
-RUN go build -o /docker-gs-ping
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -installsuffix cgo -o /docker-gs-ping
 
 EXPOSE 3001
 

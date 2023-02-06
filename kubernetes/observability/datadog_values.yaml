@@ -1,8 +1,8 @@
 # Configure the node-based Agent
 
-targetSystem: "linux"
 
 datadog:
+
 
   confd:
     #####################################
@@ -42,12 +42,21 @@ datadog:
   ### SET UP FOR ISTIO  INTEGRATION ###
   #####################################
 
+  dogstatsd:
+    useHostPort: true
+
   serviceMonitoring:
     enabled: true
   apiKey: 40d7533e4aa0fcd8de622630c5a8efff
   # "Set up the Istio integration"
   clusterName: kubernetes-istio
   site:  us5.datadoghq.com
+
+  systemProbe:
+    bpfDebug: true
+    enableTCPQueueLength: false
+    enableOOMKill: true
+    collectDNSStats: false
 
   kubeStateMetricsCore:
     enabled: true
@@ -58,6 +67,7 @@ datadog:
   apm:
     enabled: true
     port: 8126
+
 
   logs:
     enabled: true
@@ -75,20 +85,51 @@ clusterAgent:
   replicas: 2
   createPodDisruptionBudget: true
   # Disable automatic sidecar injection for Datadog Agent pods
+
+
   podAnnotations:
     sidecar.istio.io/inject: "false"
+
+
   metricsProvider:
     enabled: true
   admissionController:
     enabled: true
     mutateUnlabelled: false
 
-# Disable automatic sidecar injection for Datadog Agent pods
+
 agents:
+  # agents.enabled -- You should keep Datadog DaemonSet enabled!
+
+  ## The exceptional case could be a situation when you need to run
+  ## single Datadog pod per every namespace, but you do not need to
+  ## re-create a DaemonSet for every non-default namespace install.
+  ## Note: StatsD and DogStatsD work over UDP, so you may not
+  ## get guaranteed delivery of the metrics in Datadog-per-namespace setup!
+  enabled: true
+
+  # agents.shareProcessNamespace -- Set the process namespace sharing on the Datadog Daemonset
+  shareProcessNamespace: false
+
+  # agents.revisionHistoryLimit -- The number of ControllerRevision to keep in this DaemonSet.
+  revisionHistoryLimit: 10
+
+  ## Define the Datadog image to work with
+
+
+
+
+
+
+
+# Disable automatic sidecar injection for Datadog Agent pods
+#agents:
+
   # ?????????
   #localService:
   #  forceLocalServiceEnabled: true
   # ?????????
+
   podAnnotations:
     sidecar.istio.io/inject: "false"
 

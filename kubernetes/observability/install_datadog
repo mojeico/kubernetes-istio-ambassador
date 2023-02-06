@@ -1,0 +1,43 @@
+helm repo add datadog https://helm.datadoghq.com
+
+
+helm install datadog \
+  datadog/datadog \
+  --namespace datadog \
+  --create-namespace \
+  --values ./datadog_values.yaml;
+
+
+
+helm upgrade datadog -f datadog_values.yaml -n datadog  datadog/datadog
+
+helm uninstall datadog -n datadog datadog/datadog
+
+
+
+Register app:
+
+
+{
+  "schema-version": "v2",
+  "dd-service": "client-deployment",  -> tags.datadoghq.com/service: client-deployment
+  "team": "test_team",
+  "contacts": [
+
+    {
+      "type": "email",
+      "contact": "g.mojeico@gmail.com"
+    }
+  ],
+  "repos": [
+    {
+      "name": "istio",
+      "provider": "github",
+      "url": "https://github.com/mojeico/kubernetes-istio-ambassador"
+    }
+  ],
+  "tags": ["infra_tag","infra_tag_talue"],
+  "integrations": {
+    "pagerduty": "????"
+  }
+}

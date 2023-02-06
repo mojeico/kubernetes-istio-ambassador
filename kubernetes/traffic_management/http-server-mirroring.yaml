@@ -1,12 +1,13 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: http-server-deployment-mirroring
-  # mirroring doesn't work if we turn on  PeerAuthentication ( security -> peer-authentication-with-mutual-TLS.yaml)
-  namespace: without-istio
+  name: http-server-deployment-v0-mirroring
   labels:
     app: http-server-app
     version: v0-mirroring
+    tags.datadoghq.com/env: snd
+    tags.datadoghq.com/service: http-server-app
+    tags.datadoghq.com/version: v0-mirroring
 spec:
   selector:
     matchLabels:
@@ -16,15 +17,37 @@ spec:
   template:
     metadata:
       labels:
+        admission.datadoghq.com/enabled: "true"
         app: http-server-app
         version: v0-mirroring
+        tags.datadoghq.com/env: snd
+        tags.datadoghq.com/service: http-server-app
+        tags.datadoghq.com/version: v0-mirroring
     spec:
+      volumes:
+        - hostPath:
+            path: /var/run/datadog/
+          name: apmsocketpath
       containers:
         - name: http-server-container
-          image: http-server:mirroring
+          image: europe-west3-docker.pkg.dev/mojeico/client/http-server:v0-mirroring
           ports:
             - name: http-serv-port
               containerPort: 3001
+          volumeMounts:
+            - name: apmsocketpath
+              mountPath: /var/run/datadog
+          env:
+            - name: DD_ENV
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.labels['tags.datadoghq.com/env']
+            - name: DD_SERVICE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.labels['tags.datadoghq.com/service']
+            - name: DD_VERSION
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.labels['tags.datadoghq.com/version']
       #restartPolicy: Never
-
-

@@ -4,27 +4,56 @@ metadata:
   name: server-deployment
   labels:
     app: server
-    version: v1
+    version: v2
+    tags.datadoghq.com/env: snd
+    tags.datadoghq.com/service: server
+    tags.datadoghq.com/version: v2
 spec:
   selector:
     matchLabels:
       app: server
-      version: v1
+      version: v2
   replicas: 1
   template:
     metadata:
       labels:
+        admission.datadoghq.com/enabled: "true"
         app: server
-        version: v1
+        version: v2
+        tags.datadoghq.com/env: snd
+        tags.datadoghq.com/service: server
+        tags.datadoghq.com/version: v2
     spec:
+      volumes:
+        - hostPath:
+            path: /var/run/datadog/
+          name: apmsocketpath
       serviceAccountName: grpc-server-service-account
       containers:
         - name: service-container
-          image: server-grpc:v1
+          #image: server-grpc:v1
+          image: europe-west3-docker.pkg.dev/mojeico/client/server-grpc:v2
           ports:
             - name: server-port
               containerPort: 50051
+          volumeMounts:
+            - name: apmsocketpath
+              mountPath: /var/run/datadog
+          env:
+            - name: DD_ENV
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.labels['tags.datadoghq.com/env']
+            - name: DD_SERVICE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.labels['tags.datadoghq.com/service']
+            - name: DD_VERSION
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.labels['tags.datadoghq.com/version']
       #restartPolicy: Never
+
 
 ---
 
