@@ -1,0 +1,81 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nodejs-server-v3
+  labels:
+    app: nodejs-server
+    version: v3
+    tags.datadoghq.com/env: snd
+    tags.datadoghq.com/service: nodejs-server
+    tags.datadoghq.com/version: v3
+
+spec:
+  selector:
+    matchLabels:
+      app: nodejs-server
+      version: v3
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        admission.datadoghq.com/enabled: "true"
+        app: nodejs-server
+        version: v3
+        tags.datadoghq.com/env: snd
+        tags.datadoghq.com/service: nodejs-server
+        tags.datadoghq.com/version: v3
+    spec:
+      volumes:
+        - hostPath:
+            path: /var/run/datadog/
+          name: apmsocketpath
+      containers:
+        - name: nodejs-server
+          #image: server-grpc:v3
+          image: europe-west3-docker.pkg.dev/mojeico/client/nodejs-server:v3
+          ports:
+            - name: server-port
+              containerPort: 3001
+          volumeMounts:
+            - name: apmsocketpath
+              mountPath: /var/run/datadog
+          env:
+
+            #- name: DD_TRACE_AGENT_URL
+            #  value: 'unix:///var/run/datadog/apm.socket'
+
+
+            #- name: DD_AGENT_HOST
+            #value: datadog-cluster-agent.datadog.svc.cluster.local
+            #value: datadog.datadog.svc.cluster.local
+            #valueFrom:
+            #fieldRef:
+            #fieldPath: status.hostIP
+
+
+
+            - name: DD_ENV
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.labels['tags.datadoghq.com/env']
+            - name: DD_SERVICE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.labels['tags.datadoghq.com/service']
+            - name: DD_VERSION
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.labels['tags.datadoghq.com/version']
+            - name: DD_LOGS_INJECTION
+              value: "true"
+            #- name: DD_LOG_LEVEL
+            #  value: debug
+            #- name: DD_TRACE_AGENT_PORT
+            #  value: "8126"
+            #- name: DD_DOGSTATSD_PORT
+            #  value: "8125"
+
+      #restartPolicy: Never
+
+
+
