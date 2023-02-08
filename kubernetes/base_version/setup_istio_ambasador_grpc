@@ -63,3 +63,46 @@ Set up base ambassador example app
 
 
 
+
+
+## ---
+
+
+
+
+INSTALL  ISTIOD BY HELM - https://istio.io/latest/docs/setup/install/helm/
+
+1) helm repo add istio https://istio-release.storage.googleapis.com/charts
+2) helm repo update
+3) kubectl create namespace istio-system
+4) helm install istio-base istio/base -n istio-system
+5) helm install istiod istio/istiod -n istio-system --wait -f ./istio/istio_values_prometheus_grafana_jaeger.yaml
+
+
+---- istio ingress ----
+
+kubectl create namespace istio-ingress
+kubectl label namespace istio-ingress istio-injection=enabled
+helm install istio-ingress istio/gateway -n istio-ingress --wait
+
+
+kubectl -n istio-ingress  get service istio-ingress  -o jsonpath='{.spec.ports[?(@.name=="http2")].port}'
+
+
+---- istio ingress ----
+
+
+
+
+
+helm upgrade istiod -f ./istio/istio_values.yaml -n istio-system  istio/istiod
+
+
+
+1) kubectl label namespace default istio-injection=enabled --overwrite
+
+
+
+1) kubectl apply -f samples/bookinfo/platform/kube/bookinfo.yaml
+
+

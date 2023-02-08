@@ -15,7 +15,7 @@ pilot:
 
   # Can be a full hub/image:tag
   image: pilot
-  traceSampling: 100.0
+  traceSampling: 1.0
 
   # Resources for a small pilot install
   resources:
@@ -37,8 +37,7 @@ pilot:
   enableProtocolSniffingForInbound: true
 
   nodeSelector: {}
-
-
+  podAnnotations: {}
   serviceAnnotations: {}
 
   # You can use jwksResolverExtraRootCA to provide a root certificate
@@ -157,10 +156,10 @@ telemetry:
         outboundSidecar: {}
     # stackdriver filter settings.
     stackdriver:
-      enabled: true
-      logging: true
-      monitoring: true
-      topology: true # deprecated. setting this to true will have no effect, as this option is no longer supported.
+      enabled: false
+      logging: false
+      monitoring: false
+      topology: false # deprecated. setting this to true will have no effect, as this option is no longer supported.
       disableOutbound: false
       #  configOverride parts give you the ability to override the low level configuration params passed to envoy filter.
 
@@ -370,7 +369,7 @@ global:
 
     # Specify which tracer to use. One of: zipkin, lightstep, datadog, stackdriver.
     # If using stackdriver tracer outside GCP, set env GOOGLE_APPLICATION_CREDENTIALS to the GCP credential file.
-    tracer: ""
+    tracer: "zipkin"
 
     # Controls if sidecar is injected at the front of the container list and blocks the start of the other containers until the proxy is ready
     holdApplicationUntilProxyStarts: false
@@ -500,7 +499,7 @@ global:
     #
     datadog:
       # Host:Port for submitting traces to the Datadog agent.
-      #address: "$(HOST_IP):8126"
+      address: "$(HOST_IP):8126"
     lightstep:
       address: "" # example: lightstep-satellite:443
       accessToken: "" # example: abcdefg1234567
