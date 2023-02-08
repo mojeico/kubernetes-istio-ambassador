@@ -5,11 +5,10 @@
 
 // todo read about it - https://docs.datadoghq.com/tracing/other_telemetry/connect_logs_and_traces/nodejs
 
-const tracer = require('dd-trace').init({
-    logInjection: true
-});
+const tracer = require('dd-trace');
 
-/*const formats = require('dd-trace/ext/formats');
+
+const formats = require('dd-trace/ext/formats');
 
 class Logger {
     log(level, message) {
@@ -26,7 +25,7 @@ class Logger {
     }
 }
 
-module.exports = Logger;*/
+module.exports = Logger;
 
 
 const http = require('http');
@@ -42,12 +41,11 @@ var message = "ERROR !!! not get response !!!"
 // define handler for /goodbye URL
 app.get('/goodbye', function(req, res) {
 
-    //tracer.init()
 
-    //const my_logger = new Logger();
-    //my_logger.log("INFO", 'Client get request ');
+    const my_logger = new Logger();
+    my_logger.log("INFO", 'Client get request ');
 
-    console.log("INFO", 'Client get request ');
+    //console.log("INFO", 'Client get request ');
 
     res.send("goodbye");
 
@@ -56,11 +54,11 @@ app.get('/goodbye', function(req, res) {
 // define handler for /hello URL
 app.get("/hello", function(req, res) {
 
-    //const my_logger = new Logger();
+    const my_logger = new Logger();
 
-    //my_logger.log("INFO", 'Client get request ');
+    my_logger.log("INFO", 'Client get request ');
 
-    console.log("INFO", 'Client get request ');
+    //console.log("INFO", 'Client get request ');
 
     http.get('http://nodejs-server-service:80/servernodejs', res => {
         let data = [];
@@ -73,11 +71,11 @@ app.get("/hello", function(req, res) {
         });
 
         res.on('end', () => {
-            console.log('Response ended: ');
-            //const users = JSON.parse(Buffer.concat(data).toString());
+            //console.log('Response ended: ');
+            const users = JSON.parse(Buffer.concat(data).toString());
 
-            //my_logger.log("INFO", ` ${Buffer.concat(data).toString()}`);
-            console.log("INFO", ` ${Buffer.concat(data).toString()}`);
+            my_logger.log("INFO", ` ${Buffer.concat(data).toString()}`);
+            //console.log("INFO", ` ${Buffer.concat(data).toString()}`);
 
             message = ` ${Buffer.concat(data).toString()}`
 
