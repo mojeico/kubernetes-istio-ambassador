@@ -52,3 +52,6 @@ helm upgrade kiali-server --namespace istio-system -f kiali_values.yaml   kiali-
 
 
 helm upgrade kiali-server kiali-server/kiali-server
+
+
+helm delete kiali-server -n istio-system
