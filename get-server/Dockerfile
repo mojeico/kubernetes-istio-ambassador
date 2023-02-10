@@ -10,6 +10,12 @@
 #  docker push europe-west3-docker.pkg.dev/mojeico/client/get-grpc:v22
 
 
+#  docker build . -t get-grpc:v22
+#  docker push get-grpc:v22
+
+
+
+
 FROM golang:1.17-alpine
 
 WORKDIR /app

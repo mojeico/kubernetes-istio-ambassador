@@ -61,6 +61,17 @@ Set up base ambassador example app
 
 
 
+Set up base book-info example app
+
+1) kubectl apply -f client.yaml
+2) kubectl apply -f server.yaml
+3) kubectl apply -f get-server-v1.yaml
+4) curl -Lki https://$LB_ENDPOINT/api/v1/grpc
+
+
+
+
+
 
 
 
@@ -77,6 +88,9 @@ INSTALL  ISTIOD BY HELM - https://istio.io/latest/docs/setup/install/helm/
 3) kubectl create namespace istio-system
 4) helm install istio-base istio/base -n istio-system
 5) helm install istiod istio/istiod -n istio-system --wait -f ./istio/istio_values_prometheus_grafana_jaeger.yaml
+
+helm upgrade istiod -f ./istio/istio_values_prometheus_grafana_jaeger.yaml -n istio-system  istio/istiod
+
 
 
 ---- istio ingress ----

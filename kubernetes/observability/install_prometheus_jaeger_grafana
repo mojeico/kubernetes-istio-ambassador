@@ -8,7 +8,7 @@ helm install prometheus -f prometheus_values.yaml  prometheus-community/promethe
 
 helm upgrade prometheus -f prometheus_values.yaml  prometheus-community/prometheus
 
-helm delete prometheus prometheus-community/prometheus
+helm delete prometheus
 
 
 3 -------grafana---------

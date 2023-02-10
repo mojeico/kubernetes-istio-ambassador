@@ -28,17 +28,22 @@ spec:
         - hostPath:
             path: /var/run/datadog/
           name: apmsocketpath
+        - name: tmp
+          emptyDir: { }
+
       serviceAccountName: grpc-server-service-account
       containers:
         - name: service-container
           #image: server-grpc:v1
-          image: europe-west3-docker.pkg.dev/mojeico/client/server-grpc:v2
+          image: server-grpc:v2
           ports:
             - name: server-port
               containerPort: 50051
           volumeMounts:
             - name: apmsocketpath
               mountPath: /var/run/datadog
+            - name: tmp
+              mountPath: /tmp
           env:
             - name: DD_ENV
               valueFrom:
@@ -61,6 +66,9 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: grpc-server-service-account
+  labels:
+    app: server
+    service: server
 automountServiceAccountToken: true
 
 
@@ -69,9 +77,13 @@ apiVersion: v1
 kind: Service
 metadata:
   name: server-service
+  labels:
+    app: server
+    service: server
 spec:
   selector:
     app: server
   ports:
     - port: 50051
       targetPort: 50051
+      name: tcp

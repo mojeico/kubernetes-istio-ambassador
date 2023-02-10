@@ -7,6 +7,10 @@ FROM golang:1.17-alpine
 #  docker push europe-west3-docker.pkg.dev/mojeico/client/client-grpc:v2
 
 
+#  docker build  . -t client-grpc:v2
+#  docker push client-grpc:v2
+
+
 WORKDIR /app
 
 COPY go.mod go.sum proto ./

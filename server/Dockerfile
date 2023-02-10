@@ -5,6 +5,10 @@
 #  docker push europe-west3-docker.pkg.dev/mojeico/client/server-grpc:v2
 
 
+#  docker build . -t server-grpc:v2
+#  docker push server-grpc:v2
+
+
 FROM golang:1.17-alpine
 
 

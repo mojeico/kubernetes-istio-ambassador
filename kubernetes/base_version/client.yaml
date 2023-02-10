@@ -5,10 +5,6 @@ metadata:
   labels:
     app: client
     version: v2
-    tags.datadoghq.com/env: snd
-    tags.datadoghq.com/service: client-deployment
-    tags.datadoghq.com/version: v2
-
 spec:
   selector:
     matchLabels:
@@ -17,75 +13,50 @@ spec:
   replicas: 1
   template:
     metadata:
+      annotations:
+        prometheus.istio.io/merge-metrics: "true"
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "80"
+        prometheus.io/path: "/metrics"
       labels:
-        admission.datadoghq.com/enabled: "true"
+        #admission.datadoghq.com/enabled: "true"
         app: client
         version: v2
-        tags.datadoghq.com/env: snd
-        tags.datadoghq.com/service: client-deployment
-        tags.datadoghq.com/version: v2
     spec:
       volumes:
         - hostPath:
             path: /var/run/datadog/
           name: apmsocketpath
+        - name: tmp
+          emptyDir: { }
       serviceAccountName: client-service-account
       containers:
         - name: client-container
           #image: client-grpc:v1
-          image: europe-west3-docker.pkg.dev/mojeico/client/client-grpc:v2
+          image: client-grpc:v2
           ports:
             - name: client-port
               containerPort: 3000
           volumeMounts:
             - name: apmsocketpath
               mountPath: /var/run/datadog
-          env:
-
-            #- name: DD_TRACE_AGENT_URL
-            #  value: 'unix:///var/run/datadog/apm.socket'
-
-
-            #- name: DD_AGENT_HOST
-              #value: datadog-cluster-agent.datadog.svc.cluster.local
-            #value: datadog.datadog.svc.cluster.local
-              #valueFrom:
-                #fieldRef:
-                  #fieldPath: status.hostIP
-
-
-
-            - name: DD_ENV
-              valueFrom:
-                fieldRef:
-                  fieldPath: metadata.labels['tags.datadoghq.com/env']
-            - name: DD_SERVICE
-              valueFrom:
-                fieldRef:
-                  fieldPath: metadata.labels['tags.datadoghq.com/service']
-            - name: DD_VERSION
-              valueFrom:
-                fieldRef:
-                  fieldPath: metadata.labels['tags.datadoghq.com/version']
-            #- name: DD_LOG_LEVEL
-            #  value: debug
-            #- name: DD_TRACE_AGENT_PORT
-            #  value: "8126"
-            #- name: DD_DOGSTATSD_PORT
-            #  value: "8125"
-
-      #restartPolicy: Never
+            - name: tmp
+              mountPath: /tmp
 
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: client-service
+  name: client
+  labels:
+    app: client
+    service: client
 spec:
   selector:
     app: client
   ports:
     - port: 80
+      name: http
       #default is TCP
       appProtocol: http
       protocol: TCP
@@ -96,6 +67,8 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: client-service-account
+  labels:
+    account: client
 automountServiceAccountToken: true
 
 ---
@@ -107,5 +80,5 @@ metadata:
 spec:
   hostname: "*"
   prefix: /
-  service: client-service:80       # Be explicit about port 80. THIS IS IMPORTANT: see below
+  service: client:80       # Be explicit about port 80. THIS IS IMPORTANT: see below
   tls: istio-upstream

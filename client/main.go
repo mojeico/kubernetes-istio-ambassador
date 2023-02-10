@@ -1,98 +1,19 @@
 package main
 
 import (
-	"bufio"
 	"context"
 	"fmt"
-	"github.com/gofiber/fiber/v2"
+	"github.com/gorilla/mux"
+	"github.com/opentracing/opentracing-go"
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promauto"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"google.golang.org/grpc"
-	"gopkg.in/DataDog/dd-trace-go.v1/profiler"
+	pb "grpc-client/proto"
 	"log"
 	"net/http"
 	"time"
-
-	"gopkg.in/DataDog/dd-trace-go.v1/ddtrace/tracer"
-
-	pb "grpc-client/proto"
 )
-
-func main() {
-
-	tracer.Start()
-	defer tracer.Stop()
-
-	err := profiler.Start(
-		profiler.WithProfileTypes(
-			profiler.CPUProfile,
-			profiler.HeapProfile,
-
-			// The profiles below are disabled by
-			// default to keep overhead low, but
-			// can be enabled as needed.
-			// profiler.BlockProfile,
-			// profiler.MutexProfile,
-			// profiler.GoroutineProfile,
-		),
-	)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	defer profiler.Stop()
-
-	app := fiber.New()
-
-	app.Get("/api/v1/http", HttpRequest)
-	app.Get("/api/v1/grpc", RunGRPC)
-
-	// Start server on port 3000
-	app.Listen(":3000")
-
-}
-
-func HttpRequest(c *fiber.Ctx) error {
-
-	var err error
-	var resp *http.Response
-
-	EndUserHeader := c.GetReqHeaders()["End-User"]
-
-	if EndUserHeader != "" {
-		client := &http.Client{}
-		req, _ := http.NewRequest("GET", "http://http-server-service:80/server/http", nil)
-		req.Header.Set("End-User", EndUserHeader)
-		resp, err = client.Do(req)
-	} else {
-		client := &http.Client{}
-		req, _ := http.NewRequest("GET", "http://http-server-service:80/server/http", nil)
-		resp, err = client.Do(req)
-	}
-
-	if err != nil {
-		fmt.Println(err.Error())
-		return c.JSON(fiber.Map{"error": err.Error()})
-	}
-
-	var responseBody = ""
-
-	scanner := bufio.NewScanner(resp.Body)
-
-	for i := 0; scanner.Scan() && i < 5; i++ {
-		responseBody = scanner.Text()
-	}
-
-	if resp.StatusCode == 500 {
-		log.Println("-------")
-		log.Println(resp.StatusCode)
-		log.Println(responseBody)
-		log.Println("-------")
-	} else {
-		log.Println(responseBody)
-		log.Println(resp.StatusCode)
-	}
-
-	return c.JSON(fiber.Map{"error": responseBody})
-}
 
 const (
 	ADDRESS = "server-service:50051"
@@ -104,7 +25,76 @@ type TodoTask struct {
 	Done        bool
 }
 
-func RunGRPC(fiber *fiber.Ctx) error {
+type responseWriter struct {
+	http.ResponseWriter
+	statusCode int
+}
+
+func NewResponseWriter(w http.ResponseWriter) *responseWriter {
+	return &responseWriter{w, http.StatusOK}
+}
+
+func (rw *responseWriter) WriteHeader(code int) {
+	rw.statusCode = code
+	rw.ResponseWriter.WriteHeader(code)
+}
+
+var totalRequests = prometheus.NewCounterVec(
+	prometheus.CounterOpts{
+		Name: "http_requests_total",
+		Help: "Number of get requests.",
+	},
+	[]string{"path"},
+)
+
+//   request_result_counter = Counter('request_result', 'Results of requests', ['destination_app', 'response_code'])
+
+var requestResultCounter = promauto.NewCounter(
+	prometheus.CounterOpts{
+		Name:        "request_result",
+		Help:        "Results of requests",
+		ConstLabels: prometheus.Labels{"destination_app": "server", "code": "200"},
+	},
+	//[]string{"destination_app", "response_code"},
+)
+
+var httpDuration = promauto.NewHistogramVec(prometheus.HistogramOpts{
+	Name: "http_response_time_seconds",
+	Help: "Duration of HTTP requests.",
+}, []string{"path"})
+
+//func init() {
+//prometheus.Register(totalRequests)
+//prometheus.Register(responseStatus)
+//prometheus.Register(httpDuration)
+//prometheus.Register(requestResultCounter)
+//}
+
+func main() {
+	router := mux.NewRouter()
+	//router.Use(prometheusMiddleware)
+
+	// Prometheus endpoint
+
+	//http.Handle("/metrics", promhttp.Handler())
+	//http.Handle("/prometheus", promhttp.Handler())
+
+	router.Path("/prometheus").Handler(promhttp.Handler())
+	router.Path("/metrics").Handler(promhttp.Handler())
+
+	router.HandleFunc("/api/v1/grpc", RunGRPC)
+	fmt.Println("Serving requests on port 3000")
+	err := http.ListenAndServe(":3000", router)
+	log.Fatal(err)
+}
+
+func RunGRPC(w http.ResponseWriter, r *http.Request) {
+	trace, _ := opentracing.StartSpanFromContext(r.Context(), "Handle /api/v1/grpc")
+	//time.Sleep(time.Second / 2)
+	defer trace.Finish()
+
+	//requestResultCounter.WithLabelValues("server", "200").Inc()
+	requestResultCounter.Inc()
 
 	log.Println("Hello world!")
 
@@ -137,7 +127,5 @@ func RunGRPC(fiber *fiber.Ctx) error {
 
 		log.Printf("messae was sent")
 	}
-
-	return nil
 
 }
