@@ -82,7 +82,10 @@ global:
       maxNumberOfAttributes: 200
       maxNumberOfMessageEvents: 200
     zipkin:
-      address: ""
+      #address: ""
+      #address: "$(HOST_IP):9411"
+      address: "jaeger-collector.default:9411"
+
   useMCP: false
   variant: ""
 istiodRemote:

@@ -5,8 +5,6 @@ import (
 	"fmt"
 	"github.com/gorilla/mux"
 	"github.com/opentracing/opentracing-go"
-	"github.com/prometheus/client_golang/prometheus"
-	"github.com/prometheus/client_golang/prometheus/promauto"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"google.golang.org/grpc"
 	pb "grpc-client/proto"
@@ -25,44 +23,6 @@ type TodoTask struct {
 	Done        bool
 }
 
-type responseWriter struct {
-	http.ResponseWriter
-	statusCode int
-}
-
-func NewResponseWriter(w http.ResponseWriter) *responseWriter {
-	return &responseWriter{w, http.StatusOK}
-}
-
-func (rw *responseWriter) WriteHeader(code int) {
-	rw.statusCode = code
-	rw.ResponseWriter.WriteHeader(code)
-}
-
-var totalRequests = prometheus.NewCounterVec(
-	prometheus.CounterOpts{
-		Name: "http_requests_total",
-		Help: "Number of get requests.",
-	},
-	[]string{"path"},
-)
-
-//   request_result_counter = Counter('request_result', 'Results of requests', ['destination_app', 'response_code'])
-
-var requestResultCounter = promauto.NewCounter(
-	prometheus.CounterOpts{
-		Name:        "request_result",
-		Help:        "Results of requests",
-		ConstLabels: prometheus.Labels{"destination_app": "server", "code": "200"},
-	},
-	//[]string{"destination_app", "response_code"},
-)
-
-var httpDuration = promauto.NewHistogramVec(prometheus.HistogramOpts{
-	Name: "http_response_time_seconds",
-	Help: "Duration of HTTP requests.",
-}, []string{"path"})
-
 //func init() {
 //prometheus.Register(totalRequests)
 //prometheus.Register(responseStatus)
@@ -79,7 +39,7 @@ func main() {
 	//http.Handle("/metrics", promhttp.Handler())
 	//http.Handle("/prometheus", promhttp.Handler())
 
-	router.Path("/prometheus").Handler(promhttp.Handler())
+	//router.Path("/prometheus").Handler(promhttp.Handler())
 	router.Path("/metrics").Handler(promhttp.Handler())
 
 	router.HandleFunc("/api/v1/grpc", RunGRPC)
@@ -94,7 +54,6 @@ func RunGRPC(w http.ResponseWriter, r *http.Request) {
 	defer trace.Finish()
 
 	//requestResultCounter.WithLabelValues("server", "200").Inc()
-	requestResultCounter.Inc()
 
 	log.Println("Hello world!")
 
