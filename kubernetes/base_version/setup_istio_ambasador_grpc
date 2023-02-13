@@ -74,6 +74,8 @@ Set up base book-info example app
 
 
 
+kubectl apply -f nodejs-client.yaml
+kubectl apply -f nodejs-server.yaml
 
 
 ## ---
@@ -90,6 +92,8 @@ INSTALL  ISTIOD BY HELM - https://istio.io/latest/docs/setup/install/helm/
 5) helm install istiod istio/istiod -n istio-system --wait -f ./istio/istio_values_prometheus_grafana_jaeger.yaml
 
 helm upgrade istiod -f ./istio/istio_values_prometheus_grafana_jaeger.yaml -n istio-system  istio/istiod
+
+kubectl label namespace default istio-injection=enabled --overwrite
 
 
 

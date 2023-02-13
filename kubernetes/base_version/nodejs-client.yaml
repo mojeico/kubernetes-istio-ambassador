@@ -5,10 +5,6 @@ metadata:
   labels:
     app: nodejs-client
     version: v7
-    tags.datadoghq.com/env: snd
-    tags.datadoghq.com/service: nodejs-client
-    tags.datadoghq.com/version: v7
-
 spec:
   selector:
     matchLabels:
@@ -21,9 +17,6 @@ spec:
         admission.datadoghq.com/enabled: "true"
         app: nodejs-client
         version: v7
-        tags.datadoghq.com/env: snd
-        tags.datadoghq.com/service: nodejs-client
-        tags.datadoghq.com/version: v7
     spec:
       volumes:
         - hostPath:
@@ -31,7 +24,7 @@ spec:
           name: apmsocketpath
       containers:
         - name: nodejs-client
-          image: europe-west3-docker.pkg.dev/mojeico/client/nodejs-client:v7
+          image: nodejs-client:v1
           ports:
             - name: client-port
               containerPort: 3000
@@ -50,9 +43,6 @@ spec:
             #valueFrom:
             #fieldRef:
             #fieldPath: status.hostIP
-
-
-
             - name: DD_ENV
               valueFrom:
                 fieldRef:

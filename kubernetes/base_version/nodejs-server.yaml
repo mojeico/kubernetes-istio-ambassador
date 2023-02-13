@@ -32,7 +32,7 @@ spec:
       containers:
         - name: nodejs-server
           #image: server-grpc:v2
-          image: europe-west3-docker.pkg.dev/mojeico/client/nodejs-server:v2
+          image: nodejs-server:v1
           ports:
             - name: server-port
               containerPort: 3001

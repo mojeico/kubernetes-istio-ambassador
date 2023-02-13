@@ -1,10 +1,10 @@
 package main
 
 import (
+	"bufio"
 	"context"
 	"fmt"
 	"github.com/gorilla/mux"
-	"github.com/opentracing/opentracing-go"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"google.golang.org/grpc"
 	pb "grpc-client/proto"
@@ -23,24 +23,12 @@ type TodoTask struct {
 	Done        bool
 }
 
-//func init() {
-//prometheus.Register(totalRequests)
-//prometheus.Register(responseStatus)
-//prometheus.Register(httpDuration)
-//prometheus.Register(requestResultCounter)
-//}
-
 func main() {
 	router := mux.NewRouter()
-	//router.Use(prometheusMiddleware)
 
-	// Prometheus endpoint
-
-	//http.Handle("/metrics", promhttp.Handler())
-	//http.Handle("/prometheus", promhttp.Handler())
-
-	//router.Path("/prometheus").Handler(promhttp.Handler())
 	router.Path("/metrics").Handler(promhttp.Handler())
+
+	router.HandleFunc("/api/v1/http", HttpRequest)
 
 	router.HandleFunc("/api/v1/grpc", RunGRPC)
 	fmt.Println("Serving requests on port 3000")
@@ -48,10 +36,42 @@ func main() {
 	log.Fatal(err)
 }
 
+func HttpRequest(w http.ResponseWriter, r *http.Request) {
+
+	var resp *http.Response
+
+	//EndUserHeader := r.GetReqHeaders()["End-User"]
+
+	client := &http.Client{}
+	req, _ := http.NewRequest("GET", "http://http-server-service:80/server/http", nil)
+	resp, _ = client.Do(req)
+
+	var responseBody = ""
+
+	scanner := bufio.NewScanner(resp.Body)
+
+	for i := 0; scanner.Scan() && i < 5; i++ {
+		responseBody = scanner.Text()
+	}
+
+	if resp.StatusCode == 500 {
+		log.Println("-------")
+		log.Println(resp.StatusCode)
+		log.Println(responseBody)
+		log.Println("-------")
+	} else {
+		log.Println(responseBody)
+		log.Println(resp.StatusCode)
+	}
+
+	//return c.JSON(fiber.Map{"error": responseBody})
+
+}
+
 func RunGRPC(w http.ResponseWriter, r *http.Request) {
-	trace, _ := opentracing.StartSpanFromContext(r.Context(), "Handle /api/v1/grpc")
+	//trace, _ := opentracing.StartSpanFromContext(r.Context(), "Handle /api/v1/grpc")
 	//time.Sleep(time.Second / 2)
-	defer trace.Finish()
+	//defer trace.Finish()
 
 	//requestResultCounter.WithLabelValues("server", "200").Inc()
 

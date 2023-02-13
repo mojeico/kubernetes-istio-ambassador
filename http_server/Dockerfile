@@ -18,6 +18,12 @@
 #  docker push europe-west3-docker.pkg.dev/mojeico/client/http-server:v0-exec1
 
 
+
+
+# docker build . -t http-server:v1
+
+
+
 FROM golang:1.17
 
 WORKDIR /app

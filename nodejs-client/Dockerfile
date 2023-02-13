@@ -6,6 +6,7 @@ FROM node:18
 
 
 
+# docker build . -t nodejs-client:v1
 
 
 WORKDIR /usr/src/app
