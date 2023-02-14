@@ -1,0 +1,50 @@
+fullnameOverride: "kiali"
+
+auth:
+  strategy: "anonymous"
+
+deployment:
+
+  accessible_namespaces:
+    - "**"
+  hpa:
+    api_version: "autoscaling/v2"
+    spec: {}
+  image_name: quay.io/kiali/kiali
+  image_pull_policy: "Always"
+  image_version: v1.63.2 # version like "v1.39" (see: https://quay.io/repository/kiali/kiali?tab=tags) or a digest hash
+  instance_name: "kiali"
+  logger:
+    log_format: "text"
+    log_level: "info"
+    time_field_format: "2006-01-02T15:04:05Z07:00"
+    sampler_rate: "1"
+  resources:
+    requests:
+      cpu: "10m"
+      memory: "64Mi"
+    limits:
+      memory: "1Gi"
+
+  view_only_mode: false
+
+external_services:
+  custom_dashboards:
+    enabled: true
+  istio:
+    root_namespace: ""
+  prometheus:
+    url: "http://prometheus-server.default:80"
+  grafana:
+    enabled: true
+    in_cluster_url: 'http://grafana.default:80'
+  tracing:
+    enabled: true
+    in_cluster_url: 'http://jaeger-query.default:16685/jaeger'
+    use_grpc: true
+
+server:
+  port: 20001
+  metrics_enabled: true
+  metrics_port: 9090
+  web_root: ""

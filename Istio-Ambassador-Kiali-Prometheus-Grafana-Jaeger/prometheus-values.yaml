@@ -1,0 +1,30 @@
+configmapReload:
+  prometheus:
+    enabled: false
+
+server:
+  name: server
+  image:
+    repository: quay.io/prometheus/prometheus
+    tag: "v2.41.0"
+    pullPolicy: IfNotPresent
+
+## Configuration for alertmanager
+## ref: https://prometheus.io/docs/alerting/alertmanager/
+alertmanager:
+  enabled: false
+
+## kube-state-metrics sub-chart configurable values
+## Please see https://github.com/prometheus-community/helm-charts/tree/main/charts/kube-state-metrics
+kube-state-metrics:
+  enabled: false
+
+## promtheus-node-exporter sub-chart configurable values
+## Please see https://github.com/prometheus-community/helm-charts/tree/main/charts/prometheus-node-exporter
+prometheus-node-exporter:
+  enabled: false
+
+## pprometheus-pushgateway sub-chart configurable values
+## Please see https://github.com/prometheus-community/helm-charts/tree/main/charts/prometheus-pushgateway
+prometheus-pushgateway:
+  enabled: false

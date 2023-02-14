@@ -1,0 +1,49 @@
+global:
+
+  defaultResources:
+    requests:
+      cpu: 10m
+    #   memory: 128Mi
+    # limits:
+    #   cpu: 100m
+    #   memory: 128Mi
+
+  hub: docker.io/istio
+  istioNamespace: istio-system
+  logging:
+    level: default:info
+  proxy:
+    image: proxyv2
+    logLevel: warning
+    resources:
+      limits:
+        cpu: 2000m
+        memory: 1024Mi
+      requests:
+        cpu: 100m
+        memory: 128Mi
+    tracer: zipkin
+  proxy_init:
+    image: proxyv2
+  tag: 1.16.2
+  tracer:
+    zipkin:
+      address: "jaeger-collector.default:9411"
+pilot:
+  image: pilot
+  tag: 1.16.2
+  cpu:
+    targetAverageUtilization: 80
+  replicaCount: 1
+  resources:
+    requests:
+      cpu: 500m
+      memory: 2048Mi
+telemetry:
+  enabled: true
+  v2:
+    enabled: true
+    prometheus:
+      enabled: true
+    stackdriver:
+      enabled: false

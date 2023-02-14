@@ -1,0 +1,30 @@
+replicas: 1
+
+image:
+  repository: grafana/grafana
+  # Overrides the Grafana image tag whose default is the chart appVersion
+  tag: "9.3.6"
+  pullPolicy: IfNotPresent
+
+resources: {}
+#  limits:
+#    cpu: 100m
+#    memory: 128Mi
+#  requests:
+#    cpu: 100m
+#    memory: 128Mi
+
+# Administrator credentials when not using an existing secret (see below)
+adminUser: admin
+adminPassword: strongpassword
+
+# Use an existing secret for the admin user.
+admin:
+  ## Name of the secret. Can be templated.
+  existingSecret: ""
+  userKey: admin-user
+  passwordKey: admin-password
+
+env: {
+  JAEGER_AGENT_PORT: 5775
+}
