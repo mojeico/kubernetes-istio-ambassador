@@ -1,12 +1,7 @@
 helm repo add datadog https://helm.datadoghq.com
 
 
-helm install datadog \
-  datadog/datadog \
-  --namespace datadog \
-  --create-namespace \
-  --values ./datadog_values.yaml;
-
+helm install datadog datadog/datadog --namespace datadog --create-namespace  --values ./datadog_values.yaml;
 
 
 helm upgrade datadog -f datadog_values.yaml -n datadog  datadog/datadog

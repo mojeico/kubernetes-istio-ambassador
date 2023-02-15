@@ -11,8 +11,9 @@
   "description": "",
   "dependencies": {
     "body-parser": "^1.20.1",
-    "dd-trace": "^3.13.2",
+    "dd-trace": "^2.26.2",
     "express": "^4.18.2",
+    "node-json-logger": "^0.1.0",
     "nodemon": "^2.0.20"
   }
 }

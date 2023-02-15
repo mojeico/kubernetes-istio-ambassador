@@ -1,0 +1,72 @@
+global:
+
+  defaultResources:
+    requests:
+      cpu: 10m
+    #   memory: 128Mi
+    # limits:
+    #   cpu: 100m
+    #   memory: 128Mi
+
+  hub: docker.io/istio
+  istioNamespace: istio-system
+  logging:
+    level: default:info
+  proxy:
+    image: proxyv2
+    logLevel: warning
+    resources:
+      limits:
+        cpu: 2000m
+        memory: 1024Mi
+      requests:
+        cpu: 100m
+        memory: 128Mi
+    tracer: datadog
+  proxy_init:
+    image: proxyv2
+  tag: 1.16.2
+  tracer:
+    # Configuration for envoy to send trace data to LightStep.
+    # Disabled by default.
+    # address: the <host>:<port> of the satellite pool
+    # accessToken: required for sending data to the pool
+    #
+    datadog:
+      # Host:Port for submitting traces to the Datadog agent.
+      address: "$(HOST_IP):8126"
+pilot:
+  image: pilot
+  tag: 1.16.2
+  cpu:
+    targetAverageUtilization: 80
+  replicaCount: 1
+
+  podAnnotations:
+    ad.datadoghq.com/istio.logs: '[{"source":"istio","service":"istio"}]'
+    ad.datadoghq.com/discovery.check_names: '["istio"]'
+    ad.datadoghq.com/discovery.init_configs: '[{}]'
+    ad.datadoghq.com/discovery.instances: |
+      [
+        {
+          "istiod_endpoint": "http://%%host%%:15014/metrics",
+          "use_openmetrics": "true"
+        }
+      ]   
+
+    #####################################
+    ### SET UP FOR ISTIO  INTEGRATION ###
+    #####################################
+
+  resources:
+    requests:
+      cpu: 500m
+      memory: 2048Mi
+telemetry:
+  enabled: true
+  v2:
+    enabled: true
+    prometheus:
+      enabled: true
+    stackdriver:
+      enabled: false

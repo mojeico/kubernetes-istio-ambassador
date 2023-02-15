@@ -51,6 +51,10 @@ helm install kiali-server --namespace istio-system -f kiali_values.yaml   kiali-
 helm upgrade kiali-server --namespace istio-system -f kiali_values.yaml   kiali-server/kiali-server
 
 
+helm upgrade kiali-server --namespace istio-system -f kiali-values.yaml   kiali-server/kiali-server
+
+
+
 helm upgrade kiali-server kiali-server/kiali-server
 
 
