@@ -1,17 +1,23 @@
 # syntax=docker/dockerfile:1
 
 
-#  docker build . -t europe-west3-docker.pkg.dev/mojeico/client/http-server:v1
-#  docker push europe-west3-docker.pkg.dev/mojeico/client/http-server:v1
+#  docker build --platform linux/amd64 . -t  mojeico/golang-server:v1
+#  docker push mojeico/golang-server:v1
 
-#  docker build . -t europe-west3-docker.pkg.dev/mojeico/client/http-server:v2
-#  docker push europe-west3-docker.pkg.dev/mojeico/client/http-server:v2
 
-#  docker build . -t europe-west3-docker.pkg.dev/mojeico/client/http-server:v3
-#  docker push europe-west3-docker.pkg.dev/mojeico/client/http-server:v3
+#  docker build --platform linux/amd64 . -t  mojeico/golang-server:v11
+#  docker push mojeico/http-server:v11
 
-#  docker build . -t europe-west3-docker.pkg.dev/mojeico/client/http-server:v0-mirroring
-#  docker push europe-west3-docker.pkg.dev/mojeico/client/http-server:v0-mirroring
+
+
+#  docker build --platform linux/amd64 . -t  mojeico/http-server:v2
+#  docker push mojeico/http-server:v2
+
+#  docker build --platform linux/amd64 . -t  mojeico/http-server:v3
+#  docker push mojeico/http-server:v3
+
+#  docker build --platform linux/amd64 . -t  mojeico/http-server:v0-mirroring
+#  docker push mojeico/http-server:v0-mirroring
 
 
 #  docker build . -t europe-west3-docker.pkg.dev/mojeico/client/http-server:v0-exec1

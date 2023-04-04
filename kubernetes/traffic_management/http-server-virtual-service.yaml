@@ -34,40 +34,22 @@ spec:
   hosts:
     - http-server-service
   http:
-    # if we sent End-User header with value jason we get 500 error
-    #- fault:
-    #    abort:
-    #      httpStatus: 500
-    #      percentage:
-    #        value: 100
-    #  match:
-    #  - headers:
-    #      end-user:
-    #        exact: jason
-    #  route:
-    #    - destination:
-    #        host: http-server-service
-    #        subset: v1
-    #- route:
-    #    - destination:
-    #        host: http-server-service
-    #        subset: v1
     - route:
         - destination:
             host: http-server-service
             #host: service-name
             subset: v1
-          weight: 30
+          weight: 45
         - destination:
             host: http-server-service
             #host: service-name
             subset: v3
-          weight: 40
+          weight: 45
         - destination:
             host: http-server-service
             #host: service-name
             subset: v2
-          weight: 30
+          weight: 10
       mirror:
         host: http-server-service
         subset: v0-mirroring

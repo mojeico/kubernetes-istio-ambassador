@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fastapi-client
+  labels:
+    app.kubernetesio/name: fastapi-client
+    app.kubernetes.io/version: v1
+    app.kubernetes.io/instance: fastapi-client
+spec:
+  selector:
+    matchLabels:
+      app.kubernetesio/name: fastapi-client
+      app.kubernetes.io/version: v1
+      app.kubernetes.io/instance: fastapi-client
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app.kubernetesio/name: fastapi-client
+        app.kubernetes.io/version: v1
+        app.kubernetes.io/instance: fastapi-client
+        sidecar.istio.io/inject: 'true'
+    spec:
+      containers:
+        - name: fastapi-client
+          image: mojeico/fastapi-client:1
+          ports:
+            - name: client-port
+              containerPort: 3003
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: fastapi-client-service
+spec:
+  selector:
+    app.kubernetesio/name: fastapi-client
+    app.kubernetes.io/version: v1
+    app.kubernetes.io/instance: fastapi-client
+  ports:
+    - port: 80
+      #default is TCP
+      #appProtocol: http
+      #protocol: TCP
+      targetPort: 3003

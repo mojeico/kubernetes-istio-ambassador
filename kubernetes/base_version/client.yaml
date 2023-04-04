@@ -6,11 +6,11 @@ metadata:
     app: client
     version: v2
 spec:
+  replicas: 1
   selector:
     matchLabels:
       app: client
       version: v2
-  replicas: 1
   template:
     metadata:
       annotations:
@@ -19,29 +19,17 @@ spec:
         prometheus.io/port: "80"
         prometheus.io/path: "/metrics"
       labels:
-        #admission.datadoghq.com/enabled: "true"
         app: client
         version: v2
     spec:
-      volumes:
-        - hostPath:
-            path: /var/run/datadog/
-          name: apmsocketpath
-        - name: tmp
-          emptyDir: { }
       serviceAccountName: client-service-account
       containers:
         - name: client-container
-          #image: client-grpc:v1
-          image: client-grpc:v2
+          image: mojeico/client-grpc:v1
           ports:
             - name: client-port
               containerPort: 3000
-          volumeMounts:
-            - name: apmsocketpath
-              mountPath: /var/run/datadog
-            - name: tmp
-              mountPath: /tmp
+
 
 ---
 apiVersion: v1
@@ -55,7 +43,7 @@ spec:
   selector:
     app: client
   ports:
-    - port: 80
+    - port: 3000
       name: http
       #default is TCP
       appProtocol: http
@@ -73,12 +61,58 @@ automountServiceAccountToken: true
 
 ---
 
-apiVersion: getambassador.io/v3alpha1
-kind: Mapping
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
 metadata:
-  name: grpc-service
+  name: api-gateway
 spec:
-  hostname: "*"
-  prefix: /
-  service: client:80       # Be explicit about port 80. THIS IS IMPORTANT: see below
-  tls: istio-upstream
+  selector:
+    istio: ingressgateway # use istio default controller
+    #app.kubernetes.io/name: edge-stack
+  servers:
+    - port:
+        number: 80
+        #number: 8080
+        name: http
+        protocol: HTTP
+      hosts:
+        - mojeico.work
+
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: api-virtual-service
+spec:
+  hosts:
+    - mojeico.work
+  gateways:
+    - api-gateway
+  http:
+    - match:
+        - uri:
+            exact: /api/v1/http
+      route:
+        - destination:
+            host: client
+            port:
+              number: 3000
+
+
+---
+
+
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: client
+spec:
+  hosts:
+    - client
+  http:
+    - route:
+        - destination:
+            host: client
+          weight: 100
+
+

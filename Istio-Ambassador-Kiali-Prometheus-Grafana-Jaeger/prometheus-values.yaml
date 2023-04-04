@@ -8,6 +8,9 @@ server:
     repository: quay.io/prometheus/prometheus
     tag: "v2.41.0"
     pullPolicy: IfNotPresent
+  persistentVolume:
+    # MUST BE DESABLED FOR OUR CLUSTERS
+    enabled: false
 
 ## Configuration for alertmanager
 ## ref: https://prometheus.io/docs/alerting/alertmanager/

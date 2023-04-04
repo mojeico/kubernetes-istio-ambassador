@@ -3,39 +3,30 @@ kind: Deployment
 metadata:
   name: nodejs-server
   labels:
-    app: nodejs-server
-    version: v2
-    # for datadog APM
-    tags.datadoghq.com/env: snd
-    tags.datadoghq.com/service: nodejs-server
-    tags.datadoghq.com/version: v11
-    # for datadog APM
-
+    app.kubernetesio/name: nodejs-server
+    app.kubernetes.io/version: v1
+    app.kubernetes.io/instance: nodejs-server
 spec:
   selector:
     matchLabels:
-      app: nodejs-server
-      version: v2
+      app.kubernetesio/name: nodejs-server
+      app.kubernetes.io/version: v1
+      app.kubernetes.io/instance: nodejs-server
   replicas: 1
   template:
     metadata:
       labels:
-        app: nodejs-server
-        version: v2
-        # for datadog APM
-        admission.datadoghq.com/enabled: "true"
-        tags.datadoghq.com/env: snd
-        tags.datadoghq.com/service: nodejs-server
-        tags.datadoghq.com/version: v11
-        # for datadog APM
+        app.kubernetesio/name: nodejs-server
+        app.kubernetes.io/version: v1
+        app.kubernetes.io/instance: nodejs-server
+        sidecar.istio.io/inject: 'true'
     spec:
       containers:
         - name: nodejs-server
-          image: europe-west3-docker.pkg.dev/mojeico/client/nodejs-server:v1
+          image: mojeico/node-js-server:1
           ports:
             - name: server-port
               containerPort: 3001
-
 
 ---
 apiVersion: v1
@@ -44,7 +35,9 @@ metadata:
   name: nodejs-server-service
 spec:
   selector:
-    app: nodejs-server
+    app.kubernetesio/name: nodejs-server
+    app.kubernetes.io/version: v1
+    app.kubernetes.io/instance: nodejs-server
   ports:
     - port: 80
       #default is TCP

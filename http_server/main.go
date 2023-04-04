@@ -29,6 +29,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+
 	defer profiler.Stop()
 
 	app := fiber.New()
@@ -41,9 +42,9 @@ func main() {
 
 func GetPost(c *fiber.Ctx) error {
 	//200 code - v1
-	//fmt.Println("----- v1 ---- ")
-	//fmt.Println("return 200")
-	//return c.JSON(fiber.Map{"response": "return from v1 - 200"})
+	fmt.Println("----- v1 ---- ")
+	fmt.Println("return 200")
+	return c.JSON(fiber.Map{"response": "return from v1 - 200"})
 
 	// 500 Service Unavailable - v2
 	//fmt.Println("----- v2 ---- ")
@@ -55,7 +56,7 @@ func GetPost(c *fiber.Ctx) error {
 	//fmt.Println("return 200 from v3")
 	//return c.JSON(fiber.Map{"error": "return 200 from v3"})
 
-	fmt.Println("---- Mirroring ----")
-	return c.JSON(fiber.Map{"INFO": "INFO"})
+	//fmt.Println("---- Mirroring ----")
+	//return c.JSON(fiber.Map{"INFO": "INFO"})
 
 }

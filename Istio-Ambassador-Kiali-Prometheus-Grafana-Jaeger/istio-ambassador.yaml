@@ -1,0 +1,24 @@
+
+
+apiVersion: getambassador.io/v2
+kind: Mapping
+metadata:
+  labels:
+    app.kubernetes.io/instance: hasura
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: hasura
+    app.kubernetes.io/version: 1.16.0
+    argocd.argoproj.io/instance: hasura
+    helm.sh/chart: hasura-0.1.0
+  name: hasura
+  namespace: default
+spec:
+  allow_upgrade:
+    - websocket
+  ambassador_id:
+    - --apiVersion-v3alpha1-only--default
+  host: apidev.np.digitalzenith.io
+  prefix: /query/graphql/
+  service: hasura:8080
+  timeout_ms: 30000
+  v3StatsName: hasura

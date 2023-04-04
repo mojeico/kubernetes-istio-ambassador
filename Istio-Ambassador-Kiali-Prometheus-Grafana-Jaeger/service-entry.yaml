@@ -1,0 +1,554 @@
+
+
+apiVersion: networking.istio.io/v1beta1
+kind: ServiceEntry
+metadata:
+  name: httpbin-ext
+spec:
+  hosts:
+    - httpbin.org
+  ports:
+    - number: 80
+      name: http
+      protocol: HTTP
+  resolution: DNS
+  location: MESH_EXTERNAL
+
+
+---
+apiVersion: networking.istio.io/v1beta1
+kind: ServiceEntry
+metadata:
+  name: lambda.digitalzenith.io
+  namespace: default
+  labels:
+    kiali_wizard: ServiceEntry
+spec:
+  hosts:
+    - "lambda.digitalzenith.io"  # /dev/zenith/database/command/db-read-endpoint
+  ports:
+    - number: 5432
+      name: postgress
+      protocol: TCP
+  location: MESH_EXTERNAL
+  resolution: NONE
+  #endpoints:
+    #- address: dev-zenith-postgres-query-reader.lambda.digitalzenith.io
+      #ports:
+      #  http: 5432
+    #- address: dev-zenith-postgres-query-writer.lambda.digitalzenith.io
+      #ports:
+      #  http: 5432
+---
+
+apiVersion: networking.istio.io/v1beta1
+kind: ServiceEntry
+metadata:
+  name: confluent.cloud
+  namespace: default
+spec:
+  hosts:
+    - confluent.cloud
+  location: MESH_EXTERNAL
+  ports:
+    - name: kafra-tpc
+      protocol: TCP
+      number: 9092
+  resolution: NONE
+
+---
+
+apiVersion: networking.istio.io/v1beta1
+kind: ServiceEntry
+metadata:
+  name: kafka-confluent-host
+  namespace: default
+spec:
+  hosts:
+    - "eu-central-1.aws.confluent.cloud"
+  location: MESH_EXTERNAL
+  ports:
+    - number: 443
+      name: https
+      protocol: HTTPS
+    - number: 80
+      name: http
+      protocol: HTTP
+  resolution: NONE
+
+---
+
+apiVersion: networking.istio.io/v1beta1
+kind: ServiceEntry
+metadata:
+  name: sqs
+  namespace: default
+spec:
+  hosts:
+    - "sqs.eu-west-2.amazonaws.com"
+  location: MESH_EXTERNAL
+  ports:
+    - number: 443
+      name: https
+      protocol: HTTPS
+    - number: 80
+      name: http
+      protocol: HTTP
+  resolution: NONE
+
+---
+
+apiVersion: networking.istio.io/v1beta1
+kind: ServiceEntry
+metadata:
+  name: sts
+  namespace: default
+spec:
+  hosts:
+    - "sts.eu-west-2.amazonaws.com"
+  location: MESH_EXTERNAL
+  ports:
+    - number: 443
+      name: https
+      protocol: HTTPS
+    - number: 80
+      name: http
+      protocol: HTTP
+  resolution: NONE
+
+---
+
+apiVersion: networking.istio.io/v1beta1
+kind: ServiceEntry
+metadata:
+  name: s3-service
+  namespace: default
+spec:
+  hosts:
+    - "dev-zenith-document-management.s3.eu-west-2.amazonaws.com"
+    - "dev-zenith-document-management.s3.amazonaws.com"
+    - "dev-zenith-document-management.s3.eu-west-2.amazonaws.com"
+    - "dev-zenith-document-management.s3.amazonaws.com"
+  location: MESH_EXTERNAL
+  ports:
+    - number: 443
+      name: https
+      protocol: HTTPS
+    - number: 80
+      name: http
+      protocol: HTTP
+  resolution: NONE
+
+---
+
+apiVersion: networking.istio.io/v1beta1
+kind: ServiceEntry
+metadata:
+  name: kms
+  namespace: default
+spec:
+  hosts:
+    - "kms.eu-west-2.amazonaws.com"
+    - "kms-fips.eu-west-2.amazonaws.com"
+  location: MESH_EXTERNAL
+  ports:
+    - number: 443
+      name: https
+      protocol: HTTPS
+    - number: 80
+      name: http
+      protocol: HTTP
+  resolution: NONE
+
+---
+
+apiVersion: networking.istio.io/v1beta1
+kind: ServiceEntry
+metadata:
+  name: secrets
+  namespace: default
+spec:
+  hosts:
+    - "secretsmanager.eu-west-2.amazonaws.com"
+    - "secretsmanager-fips.eu-west-2.amazonaws.com"
+  location: MESH_EXTERNAL
+  ports:
+    - number: 443
+      name: https
+      protocol: HTTPS
+    - number: 80
+      name: http
+      protocol: HTTP
+  resolution: NONE
+
+
+---
+
+apiVersion: networking.istio.io/v1beta1
+kind: ServiceEntry
+metadata:
+  name: textkernel
+  namespace: default
+spec:
+  hosts:
+    - "staging.textkernel.nl"
+  location: MESH_EXTERNAL
+  ports:
+    - number: 443
+      name: https
+      protocol: HTTPS
+    - number: 80
+      name: http
+      protocol: HTTP
+  resolution: NONE
+
+
+---
+
+apiVersion: networking.istio.io/v1beta1
+kind: ServiceEntry
+metadata:
+  name: beanwidget
+  namespace: default
+spec:
+  hosts:
+    - "beanwidget.adcourier.com"
+  location: MESH_EXTERNAL
+  ports:
+    - number: 443
+      name: https
+      protocol: HTTPS
+    - number: 80
+      name: http
+      protocol: HTTP
+  resolution: NONE
+
+
+---
+
+apiVersion: networking.istio.io/v1beta1
+kind: ServiceEntry
+metadata:
+  name: api
+  namespace: default
+spec:
+  hosts:
+    - "apidev.np.digitalzenith.io"
+  location: MESH_EXTERNAL
+  ports:
+    - number: 443
+      name: https
+      protocol: HTTPS
+    - number: 80
+      name: http
+      protocol: HTTP
+  resolution: NONE
+
+---
+
+apiVersion: networking.istio.io/v1beta1
+kind: ServiceEntry
+metadata:
+  name: sharepoint
+  namespace: default
+spec:
+  hosts:
+    - "sharepoint.com"
+  location: MESH_EXTERNAL
+  ports:
+    - number: 443
+      name: https
+      protocol: HTTPS
+    - number: 80
+      name: http
+      protocol: HTTP
+  resolution: NONE
+
+---
+
+apiVersion: networking.istio.io/v1beta1
+kind: ServiceEntry
+metadata:
+  name: outlook
+  namespace: default
+spec:
+  hosts:
+    - "outlook.com"
+  location: MESH_EXTERNAL
+  ports:
+    - number: 443
+      name: https
+      protocol: HTTPS
+    - number: 80
+      name: http
+      protocol: HTTP
+  resolution: NONE
+
+
+
+---
+
+apiVersion: networking.istio.io/v1beta1
+kind: ServiceEntry
+metadata:
+  name: graph-microsoft-com
+  namespace: default
+spec:
+  hosts:
+    - "graph.microsoft.com"
+  location: MESH_EXTERNAL
+  ports:
+    - number: 443
+      name: https
+      protocol: HTTPS
+    - number: 80
+      name: http
+      protocol: HTTP
+  resolution: NONE
+
+---
+
+apiVersion: networking.istio.io/v1beta1
+kind: ServiceEntry
+metadata:
+  name: pypi
+  namespace: default
+spec:
+  hosts:
+    - "pypi.org"
+  location: MESH_EXTERNAL
+  ports:
+    - number: 443
+      name: https
+      protocol: HTTPS
+    - number: 80
+      name: http
+      protocol: HTTP
+  resolution: NONE
+
+
+---
+
+apiVersion: networking.istio.io/v1beta1
+kind: ServiceEntry
+metadata:
+  name: virustotal
+  namespace: default
+spec:
+  hosts:
+    - "virustotal.com"
+  location: MESH_EXTERNAL
+  ports:
+    - number: 443
+      name: https
+      protocol: HTTPS
+    - number: 80
+      name: http
+      protocol: HTTP
+  resolution: NONE
+
+---
+
+
+apiVersion: networking.istio.io/v1beta1
+kind: ServiceEntry
+metadata:
+  name: microsoft
+  namespace: default
+spec:
+  hosts:
+    - "microsoft.com"
+  location: MESH_EXTERNAL
+  ports:
+    - number: 443
+      name: https
+      protocol: HTTPS
+    - number: 80
+      name: http
+      protocol: HTTP
+  resolution: NONE
+
+
+---
+
+apiVersion: networking.istio.io/v1beta1
+kind: ServiceEntry
+metadata:
+  name: microsoftonline
+  namespace: default
+spec:
+  hosts:
+    - "microsoftonline.com"
+  location: MESH_EXTERNAL
+  ports:
+    - number: 443
+      name: https
+      protocol: HTTPS
+    - number: 80
+      name: http
+      protocol: HTTP
+  resolution: NONE
+
+---
+
+apiVersion: networking.istio.io/v1beta1
+kind: ServiceEntry
+metadata:
+  name: hometextkernel
+  namespace: default
+spec:
+  hosts:
+    - "home.textkernel.nl"
+  location: MESH_EXTERNAL
+  ports:
+    - number: 443
+      name: https
+      protocol: HTTPS
+    - number: 80
+      name: http
+      protocol: HTTP
+  resolution: NONE
+
+
+---
+
+apiVersion: networking.istio.io/v1beta1
+kind: ServiceEntry
+metadata:
+  name: loginmicrosoftonline
+  namespace: default
+spec:
+  hosts:
+    - "login.microsoftonline.com"
+  location: MESH_EXTERNAL
+  ports:
+    - number: 443
+      name: https
+      protocol: HTTPS
+    - number: 80
+      name: http
+      protocol: HTTP
+  resolution: NONE
+
+---
+
+apiVersion: networking.istio.io/v1beta1
+kind: ServiceEntry
+metadata:
+  name: download.geonames.org
+  namespace: default
+spec:
+  hosts:
+    - "download.geonames.org"
+  location: MESH_EXTERNAL
+  ports:
+    - number: 443
+      name: https
+      protocol: HTTPS
+    - number: 80
+      name: http
+      protocol: HTTP
+  resolution: NONE
+
+
+
+---
+
+apiVersion: networking.istio.io/v1beta1
+kind: ServiceEntry
+metadata:
+  name: geonamesorg
+  namespace: default
+spec:
+  hosts:
+    - "geonames.org"
+  location: MESH_EXTERNAL
+  ports:
+    - number: 443
+      name: https
+      protocol: HTTPS
+    - number: 80
+      name: http
+      protocol: HTTP
+  resolution: NONE
+
+---
+
+apiVersion: networking.istio.io/v1beta1
+kind: ServiceEntry
+metadata:
+  name: circlecicom
+  namespace: default
+spec:
+  hosts:
+    - "circleci.com"
+  location: MESH_EXTERNAL
+  ports:
+    - number: 443
+      name: https
+      protocol: HTTPS
+    - number: 80
+      name: http
+      protocol: HTTP
+  resolution: NONE
+
+
+---
+
+apiVersion: networking.istio.io/v1beta1
+kind: ServiceEntry
+metadata:
+  name: ecr
+  namespace: default
+spec:
+  hosts:
+    - "ecr.eu-west-2.amazonaws.com"
+  location: MESH_EXTERNAL
+  ports:
+    - number: 443
+      name: https
+      protocol: HTTPS
+    - number: 80
+      name: http
+      protocol: HTTP
+  resolution: NONE
+
+---
+
+apiVersion: networking.istio.io/v1beta1
+kind: ServiceEntry
+metadata:
+  name: ssm
+  namespace: default
+spec:
+  hosts:
+    - "ssm.eu-west-2.amazonaws.com"
+  location: MESH_EXTERNAL
+  ports:
+    - number: 443
+      name: https
+      protocol: HTTPS
+    - number: 80
+      name: http
+      protocol: HTTP
+  resolution: NONE
+
+---
+
+apiVersion: networking.istio.io/v1beta1
+kind: ServiceEntry
+metadata:
+  name: github.com
+  namespace: default
+spec:
+  hosts:
+    - "github.com"
+  location: MESH_EXTERNAL
+  ports:
+    - number: 443
+      name: https
+      protocol: HTTPS
+    - number: 80
+      name: http
+      protocol: HTTP
+  resolution: NONE

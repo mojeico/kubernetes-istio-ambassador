@@ -30,7 +30,7 @@ spec:
           name: apmsocketpath
       containers:
         - name: http-server-container
-          image: europe-west3-docker.pkg.dev/mojeico/client/http-server:v0-mirroring
+          image: mojeico/http-server:v0-mirroring
           ports:
             - name: http-serv-port
               containerPort: 3001

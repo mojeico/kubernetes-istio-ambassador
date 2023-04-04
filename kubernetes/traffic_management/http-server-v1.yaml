@@ -1,3 +1,39 @@
+
+apiVersion: argoproj.io/v1alpha1               # Create a rollout resource
+kind: Rollout
+metadata:
+  name: rollout-ref-deployment
+spec:
+  replicas: 5
+  selector:
+    matchLabels:
+      app: http-server-app
+  workloadRef:                                 # Reference an existing Deployment using workloadRef field
+    apiVersion: apps/v1
+    kind: Deployment
+    name: http-server-deployment-v1
+  strategy:
+    canary:
+      canaryService: rollouts-demo-canary
+      stableService: http-server-service
+      trafficRouting:
+        istio:
+          virtualServices:
+            - name: rollouts-demo-vsvc1 # At least one virtualService is required
+              routes:
+                - primary # At least one route is required
+      steps:
+        - setWeight: 20
+        - pause: { }
+        - setWeight: 40
+        - pause: { }
+        - setWeight: 60
+        - pause: { }
+        - setWeight: 80
+        - pause: { }
+
+---
+
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -5,70 +41,55 @@ metadata:
   labels:
     app: http-server-app
     version: v1
-    #tags.datadoghq.com/env: snd
-    #tags.datadoghq.com/service: http-server-app
-    #tags.datadoghq.com/version: v1
 spec:
   selector:
     matchLabels:
       app: http-server-app
       version: v1
-  replicas: 1
+  replicas: 0
   template:
     metadata:
-      annotations:
-        apm.datadoghq.com/env: '{"DD_ENV": "prod", "DD_SERVICE": "my-service", "DD_VERSION": "v1.1", "DD_TRACE_SAMPLING_RULES": "[]"}'
       labels:
-        admission.datadoghq.com/enabled: "true"
         app: http-server-app
         version: v1
-        #tags.datadoghq.com/env: snd
-        #tags.datadoghq.com/service: http-server-app
-        #tags.datadoghq.com/version: v1
     spec:
-      volumes:
-        - hostPath:
-            path: /var/run/datadog/
-          name: apmsocketpath
       containers:
         - name: http-server-container
-          image: http-server:v1
+          image: mojeico/http-server:v11
           ports:
             - name: http-serv-port
               containerPort: 3001
-          volumeMounts:
-            - name: apmsocketpath
-              mountPath: /var/run/datadog
-          env:
-            - name: DD_TRACE_STARTUP_LOGS
-              value: "true"
-
-            #- name: DD_AGENT_HOST
-            #  value: datadog-agent.datadog
-            #- name: DD_ENV
-            #  valueFrom:
-            #    fieldRef:
-            #      fieldPath: metadata.labels['tags.datadoghq.com/env']
-            #- name: DD_SERVICE
-            #  valueFrom:
-            #    fieldRef:
-            #      fieldPath: metadata.labels['tags.datadoghq.com/service']
-            #- name: DD_VERSION
-            #  valueFrom:
-            #    fieldRef:
-            #      fieldPath: metadata.labels['tags.datadoghq.com/version']
-      #restartPolicy: Never
 
 ---
+
 apiVersion: v1
 kind: Service
 metadata:
   name: http-server-service
 spec:
-  selector:
-    app: http-server-app
   ports:
     - port: 80
-      appProtocol: http
-      protocol: TCP
       targetPort: 3001
+      protocol: TCP
+      name: http
+  selector:
+    app: http-server-app
+    # This selector will be updated with the pod-template-hash of the stable ReplicaSet. e.g.:
+    # rollouts-pod-template-hash: 789746c88d
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: rollouts-demo-canary
+spec:
+  ports:
+    - port: 80
+      targetPort: 3001
+      protocol: TCP
+      name: http
+  selector:
+    app: http-server-app
+    # This selector will be updated with the pod-template-hash of the canary ReplicaSet. e.g.:
+    # rollouts-pod-template-hash: 7bf84f9696

@@ -7,6 +7,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"google.golang.org/grpc"
+	"gopkg.in/DataDog/dd-trace-go.v1/profiler"
 	pb "grpc-client/proto"
 	"log"
 	"net/http"
@@ -24,6 +25,28 @@ type TodoTask struct {
 }
 
 func main() {
+
+	err := profiler.Start(
+		profiler.WithService("golang-client"),
+		profiler.WithEnv("snd"),
+		profiler.WithVersion("v1"),
+		profiler.WithTags("app:golang-client", "app1:golang-client1"),
+		profiler.WithProfileTypes(
+			profiler.CPUProfile,
+			profiler.HeapProfile,
+			// The profiles below are disabled by default to keep overhead
+			// low, but can be enabled as needed.
+
+			profiler.BlockProfile,
+			profiler.MutexProfile,
+			profiler.GoroutineProfile,
+		),
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer profiler.Stop()
+
 	router := mux.NewRouter()
 
 	router.Path("/metrics").Handler(promhttp.Handler())
@@ -32,7 +55,7 @@ func main() {
 
 	router.HandleFunc("/api/v1/grpc", RunGRPC)
 	fmt.Println("Serving requests on port 3000")
-	err := http.ListenAndServe(":3000", router)
+	err = http.ListenAndServe(":3000", router)
 	log.Fatal(err)
 }
 

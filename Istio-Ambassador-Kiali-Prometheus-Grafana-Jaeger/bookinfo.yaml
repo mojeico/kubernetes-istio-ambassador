@@ -1,16 +1,4 @@
 
-apiVersion: getambassador.io/v3alpha1
-kind: Mapping
-metadata:
-  name: product-page-backend
-spec:
-  hostname: "*"
-  prefix: /
-  #service: quote:80       # Be explicit about port 80. THIS IS IMPORTANT: see below
-  service: productpage:9080
-  tls: istio-upstream     # Originate TLS with the mTLS certificate
-
-
 ---
 apiVersion: v1
 kind: Service
@@ -24,7 +12,7 @@ spec:
     - port: 9080
       name: http
   selector:
-    app: details
+    app.kubernetesio/name: details
 ---
 apiVersion: v1
 kind: ServiceAccount
@@ -38,19 +26,23 @@ kind: Deployment
 metadata:
   name: details-v1
   labels:
-    app: details
-    version: v1
+    app.kubernetesio/name: details
+    app.kubernetes.io/version: v1
+    app.kubernetes.io/instance: details
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: details
-      version: v1
+      app.kubernetesio/name: details
+      app.kubernetes.io/version: v1
+      app.kubernetes.io/instance: details
   template:
     metadata:
       labels:
-        app: details
-        version: v1
+        app.kubernetesio/name: details
+        app.kubernetes.io/version: v1
+        app.kubernetes.io/instance: details
+        sidecar.istio.io/inject: 'true'
     spec:
       serviceAccountName: bookinfo-details
       containers:
@@ -77,7 +69,7 @@ spec:
     - port: 9080
       name: http
   selector:
-    app: ratings
+    app.kubernetesio/name: ratings
 ---
 apiVersion: v1
 kind: ServiceAccount
@@ -91,19 +83,23 @@ kind: Deployment
 metadata:
   name: ratings-v1
   labels:
-    app: ratings
-    version: v1
+    app.kubernetesio/name: ratings
+    app.kubernetes.io/version: v1
+    app.kubernetes.io/instance: ratings
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: ratings
-      version: v1
+      app.kubernetesio/name: ratings
+      app.kubernetes.io/version: v1
+      app.kubernetes.io/instance: ratings
   template:
     metadata:
       labels:
-        app: ratings
-        version: v1
+        app.kubernetesio/name: ratings
+        app.kubernetes.io/version: v1
+        app.kubernetes.io/instance: ratings
+        sidecar.istio.io/inject: 'true'
     spec:
       serviceAccountName: bookinfo-ratings
       containers:
@@ -130,7 +126,7 @@ spec:
     - port: 9080
       name: http
   selector:
-    app: reviews
+    app.kubernetesio/name: reviews
 ---
 apiVersion: v1
 kind: ServiceAccount
@@ -144,19 +140,23 @@ kind: Deployment
 metadata:
   name: reviews-v1
   labels:
-    app: reviews
-    version: v1
+    app.kubernetesio/name: reviews
+    app.kubernetes.io/version: v1
+    app.kubernetes.io/instance: reviews
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: reviews
-      version: v1
+      app.kubernetesio/name: reviews
+      app.kubernetes.io/version: v1
+      app.kubernetes.io/instance: reviews
   template:
     metadata:
       labels:
-        app: reviews
-        version: v1
+        app.kubernetesio/name: reviews
+        app.kubernetes.io/version: v1
+        app.kubernetes.io/instance: reviews
+        sidecar.istio.io/inject: 'true'
     spec:
       serviceAccountName: bookinfo-reviews
       containers:
@@ -186,19 +186,23 @@ kind: Deployment
 metadata:
   name: reviews-v2
   labels:
-    app: reviews
-    version: v2
+    app.kubernetesio/name: reviews
+    app.kubernetes.io/version: v2
+    app.kubernetes.io/instance: reviews
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: reviews
-      version: v2
+      app.kubernetesio/name: reviews
+      app.kubernetes.io/version: v2
+      app.kubernetes.io/instance: reviews
   template:
     metadata:
       labels:
-        app: reviews
-        version: v2
+        app.kubernetesio/name: reviews
+        app.kubernetes.io/version: v2
+        app.kubernetes.io/instance: reviews
+        sidecar.istio.io/inject: 'true'
     spec:
       serviceAccountName: bookinfo-reviews
       containers:
@@ -228,19 +232,23 @@ kind: Deployment
 metadata:
   name: reviews-v3
   labels:
-    app: reviews
-    version: v3
+    app.kubernetesio/name: reviews
+    app.kubernetes.io/version: v3
+    app.kubernetes.io/instance: reviewsZ
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: reviews
-      version: v3
+      app.kubernetesio/name: reviews
+      app.kubernetes.io/version: v3
+      app.kubernetes.io/instance: reviews
   template:
     metadata:
       labels:
-        app: reviews
-        version: v3
+        app.kubernetesio/name: reviews
+        app.kubernetes.io/version: v3
+        app.kubernetes.io/instance: reviews
+        sidecar.istio.io/inject: 'true'
     spec:
       serviceAccountName: bookinfo-reviews
       containers:
@@ -294,19 +302,23 @@ kind: Deployment
 metadata:
   name: productpage-v1
   labels:
-    app: productpage
-    version: v1
+    app.kubernetesio/name: productpage
+    app.kubernetes.io/version: v1
+    app.kubernetes.io/instance: productpage
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: productpage
-      version: v1
+      app.kubernetesio/name: productpage
+      app.kubernetes.io/version: v1
+      app.kubernetes.io/instance: productpage
   template:
     metadata:
       labels:
-        app: productpage
-        version: v1
+        app.kubernetesio/name: productpage
+        app.kubernetes.io/version: v1
+        app.kubernetes.io/instance: productpage
+        sidecar.istio.io/inject: 'true'
     spec:
       serviceAccountName: bookinfo-productpage
       containers:

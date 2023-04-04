@@ -1,0 +1,37 @@
+apiVersion: getambassador.io/v3alpha1
+kind: Filter
+metadata:
+  name: authentication
+spec:
+  External:
+    auth_service: "example-auth:3000"
+    path_prefix: "/extauth"
+    allowed_request_headers:
+      - "x-qotm-session"
+    allowed_authorization_headers:
+      - "x-qotm-session"
+
+---
+
+
+apiVersion: getambassador.io/v3alpha1
+kind: Filter
+metadata:
+  name: "my-secret-api-keys-filter"
+  namespace: default
+spec:
+  APIKey:
+    #auth_service: "quote:80"
+    #path_prefix: "/backend"
+    httpHeader: "x-my-api-key-header" # optional; default is X-API-Key
+    keys:
+      - secretName: "my-secret-api-keys"
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  namespace: default
+  name: my-secret-api-keys
+data:
+  key-one: bXktZmlyc3QtYXBpLWtleQ==
+  key-two: bXktc2Vjb25kLWFwaS1rZXk=

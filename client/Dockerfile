@@ -3,12 +3,18 @@
 FROM golang:1.17-alpine
 
 
-#  docker build  . -t europe-west3-docker.pkg.dev/mojeico/client/client-grpc:v2
-#  docker push europe-west3-docker.pkg.dev/mojeico/client/client-grpc:v2
 
 
-#  docker build  . -t client-grpc:v2
-#  docker push client-grpc:v2
+#  docker build --platform linux/amd64 . -t  mojeico/golang-client:v1
+#  docker push  mojeico/golang-client:v1
+
+
+#  docker build --platform linux/amd64 . -t  mojeico/client-grpc:v2
+#  docker push mojeico/client-grpc:v2
+
+
+
+
 
 
 WORKDIR /app
