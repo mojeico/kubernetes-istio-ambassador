@@ -1,64 +1,66 @@
-
-apiVersion: argoproj.io/v1alpha1               # Create a rollout resource
-kind: Rollout
-metadata:
-  name: rollout-ref-deployment
-spec:
-  replicas: 5
-  selector:
-    matchLabels:
-      app: http-server-app
-  workloadRef:                                 # Reference an existing Deployment using workloadRef field
-    apiVersion: apps/v1
-    kind: Deployment
-    name: http-server-deployment-v1
-  strategy:
-    canary:
-      canaryService: rollouts-demo-canary
-      stableService: http-server-service
-      trafficRouting:
-        istio:
-          virtualServices:
-            - name: rollouts-demo-vsvc1 # At least one virtualService is required
-              routes:
-                - primary # At least one route is required
-      steps:
-        - setWeight: 20
-        - pause: { }
-        - setWeight: 40
-        - pause: { }
-        - setWeight: 60
-        - pause: { }
-        - setWeight: 80
-        - pause: { }
-
----
-
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: http-server-deployment-v1
   labels:
-    app: http-server-app
-    version: v1
+    app.kubernetesio/name: http-server
+    app.kubernetes.io/version: v1
+    app.kubernetes.io/instance: http-server
+    tags.datadoghq.com/env: snd
+    tags.datadoghq.com/service: http-server
+    tags.datadoghq.com/version: v1
 spec:
   selector:
     matchLabels:
-      app: http-server-app
-      version: v1
-  replicas: 0
+      app.kubernetesio/name: http-server
+      app.kubernetes.io/version: v1
+      app.kubernetes.io/instance: http-server
+      tags.datadoghq.com/env: snd
+      tags.datadoghq.com/service: http-server
+      tags.datadoghq.com/version: v1
+  replicas: 1
   template:
     metadata:
       labels:
-        app: http-server-app
-        version: v1
+        app.kubernetesio/name: http-server
+        app.kubernetes.io/version: v1
+        app.kubernetes.io/instance: http-server
+        tags.datadoghq.com/env: snd
+        tags.datadoghq.com/service: http-server
+        tags.datadoghq.com/version: v1
+        sidecar.istio.io/inject: "true"
     spec:
+      volumes:
+        - hostPath:
+            path: /var/run/datadog/
+          name: apmsocketpath
       containers:
-        - name: http-server-container
-          image: mojeico/http-server:v11
+        - name: server-container
+          image: mojeico/golang-server:v1
           ports:
             - name: http-serv-port
               containerPort: 3001
+          volumeMounts:
+            - name: apmsocketpath
+              mountPath: /var/run/datadog
+          env:
+            - name: DD_ENV
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.labels['tags.datadoghq.com/env']
+            - name: DD_SERVICE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.labels['tags.datadoghq.com/service']
+            - name: DD_VERSION
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.labels['tags.datadoghq.com/version']
+            - name: DD_APPSEC_ENABLED
+              value: "true"
+
+
+
 
 ---
 
@@ -73,23 +75,12 @@ spec:
       protocol: TCP
       name: http
   selector:
-    app: http-server-app
+    app.kubernetesio/name: http-server
+    app.kubernetes.io/version: v1
+    app.kubernetes.io/instance: http-server
+
     # This selector will be updated with the pod-template-hash of the stable ReplicaSet. e.g.:
     # rollouts-pod-template-hash: 789746c88d
 
----
 
-apiVersion: v1
-kind: Service
-metadata:
-  name: rollouts-demo-canary
-spec:
-  ports:
-    - port: 80
-      targetPort: 3001
-      protocol: TCP
-      name: http
-  selector:
-    app: http-server-app
-    # This selector will be updated with the pod-template-hash of the canary ReplicaSet. e.g.:
-    # rollouts-pod-template-hash: 7bf84f9696
+

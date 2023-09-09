@@ -43,7 +43,7 @@ spec:
       containers:
         - name: get-server-container
           #image: get-server-grpc:v1
-          image: get-grpc:v22
+          image: get-grpc:v1
           ports:
             - name: get-server-port
               containerPort: 50052

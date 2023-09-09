@@ -2,20 +2,11 @@ import uvicorn
 from fastapi import FastAPI
 import requests
 
-from ddtrace.profiling import Profiler
-
-prof = Profiler(
-    env="prod",  # if not specified, falls back to environment variable DD_ENV
-    service="my-web-app",  # if not specified, falls back to environment variable DD_SERVICE
-    version="1.0.3",   # if not specified, falls back to environment variable DD_VERSION
-)
-prof.start()  # Should be as early as possible, eg before other imports, to ensure everything is profiled
-
 app = FastAPI()
 
-
-@app.get("/")
+@app.get("/fast/api/http")
 async def root():
+    print('Hello, World!')
     r = requests.get('http://fastapi-server-service:80')
 
     return {"message": r.status_code}
@@ -23,6 +14,7 @@ async def root():
 
 @app.get("/hello/{name}")
 async def say_hello(name: str):
+    print('Hello, World!')
     return {"message": f"Hello {name}"}
 
 if __name__ == "__main__":

@@ -47,10 +47,10 @@ spec:
       containers:
         - name: service-container
           #image: server-grpc:v1
-          image: server-grpc:v2
+          image: http-server:v1
           ports:
             - name: server-port
-              containerPort: 50051
+              containerPort: 3001
           volumeMounts:
             - name: apmsocketpath
               mountPath: /var/run/datadog
@@ -97,5 +97,5 @@ spec:
     app: server
   ports:
     - port: 50051
-      targetPort: 50051
+      targetPort: 3001
       name: tcp

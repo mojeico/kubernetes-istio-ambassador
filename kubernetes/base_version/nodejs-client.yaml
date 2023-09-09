@@ -6,6 +6,9 @@ metadata:
     app.kubernetesio/name: nodejs-client
     app.kubernetes.io/version: v1
     app.kubernetes.io/instance: nodejs-client
+    tags.datadoghq.com/env: snd
+    tags.datadoghq.com/service: nodejs-client
+    tags.datadoghq.com/version: v1
 spec:
   selector:
     matchLabels:
@@ -23,7 +26,7 @@ spec:
     spec:
       containers:
         - name: nodejs-client
-          image: mojeico/node-js-client:v454363
+          image: mojeico/nodejs-client:v777
           ports:
             - name: client-port
               containerPort: 3000
@@ -40,7 +43,18 @@ spec:
     app.kubernetes.io/instance: nodejs-client
   ports:
     - port: 80
-      #default is TCP
-      #appProtocol: http
-      #protocol: TCP
       targetPort: 3000
+
+---
+
+
+apiVersion: getambassador.io/v3alpha1
+kind: Mapping
+metadata:
+  name: nodejs-client-mapping
+spec:
+  hostname: "*"
+  prefix: /test1/
+  service: nodejs-client-service:80       # Be explicit about port 80. THIS IS IMPORTANT: see below
+  tls: istio-upstream     # Originate TLS with the mTLS certificate
+

@@ -1,0 +1,107 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: golang-client-deployment
+  labels:
+    app.kubernetes.io/name: client
+    app.kubernetes.io/version: v2
+    app.kubernetes.io/instance: client
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: client
+      app.kubernetes.io/version: v2
+      app.kubernetes.io/instance: client
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: client
+        app.kubernetes.io/version: v2
+        app.kubernetes.io/instance: client
+        sidecar.istio.io/inject: "true"
+    spec:
+      serviceAccountName: golang-client-service-account
+      containers:
+        - name: client-container
+          image: mojeico/golang-client:v4
+          ports:
+            - name: client-port
+              containerPort: 3000
+          env:
+            - name: SERVER_ADDRESS
+              #value: "golang-server-service:50051"
+              value: "api.snd.digitalzenith.io"
+---
+
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: golang-client-service
+  labels:
+    app: client
+    service: client
+spec:
+  selector:
+    app.kubernetes.io/name: client
+    app.kubernetes.io/version: v2
+    app.kubernetes.io/instance: client
+  ports:
+    - port: 3000
+      name: http
+      appProtocol: http
+      protocol: TCP
+      targetPort: 3000
+
+---
+
+
+apiVersion: gateway.networking.k8s.io/v1beta1
+kind: HTTPRoute
+metadata:
+  name: client-http
+  namespace: default
+spec:
+  parentRefs:
+    - name: gateway
+      namespace: istio-ingress
+  rules:
+    - backendRefs:
+        - name: golang-client-service
+          port: 3000
+      matches:
+        - path:
+           type: PathPrefix
+           value: /golang
+
+          # ALLOW
+          # /golang/v1/entities
+          # /golang/docs
+      filters:
+        - type: URLRewrite
+          urlRewrite:
+            path:
+              type: ReplacePrefixMatch
+              replacePrefixMatch: " "
+    #- matches:
+    #    - path:
+    #        type: PathPrefix
+    #        value: /api/v1/
+            # ALLOW
+            # /api/v1/resp/new
+            # /api/v1/resp
+
+
+
+---
+
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: golang-client-service-account
+  labels:
+    account: client
+automountServiceAccountToken: true
+
+---

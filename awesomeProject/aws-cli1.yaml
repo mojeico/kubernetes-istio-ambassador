@@ -1,0 +1,35 @@
+
+
+
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: aws-cli1
+  labels:
+    app: aws-cli1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: aws-cli1
+  template:
+    metadata:
+      name: aws-cli1
+      labels:
+        app: aws-cli1
+    spec:
+      serviceAccountName: aws-cli-service-account
+      containers:
+        - name: aws-cli1
+          image: amazon/aws-cli
+          imagePullPolicy: IfNotPresent
+          command:
+            - /bin/sh
+            - -c
+            - |
+              aws sqs list-queues
+              sleep 604800
+      restartPolicy: Always

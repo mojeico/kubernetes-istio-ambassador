@@ -1,0 +1,86 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: golang-server-deployment
+  labels:
+    app.kubernetesio/name: server
+    app.kubernetes.io/version: v1
+    app.kubernetes.io/instance: server
+spec:
+  selector:
+    matchLabels:
+      app.kubernetesio/name: server
+      app.kubernetes.io/version: v1
+      app.kubernetes.io/instance: server
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app.kubernetesio/name: server
+        app.kubernetes.io/version: v1
+        app.kubernetes.io/instance: server
+        sidecar.istio.io/inject: "true"
+    spec:
+      serviceAccountName: golang-grpc-server-service-account
+      containers:
+        - name: service-container
+          #image: server-grpc:v1
+          image: mojeico/golang-server:v1
+          ports:
+            - name: server-port
+              containerPort: 50051
+          env:
+            - name: GET_SERVER_ADDRESS
+              value: "golang-get-server-grpc:50052"
+
+
+---
+
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: golang-grpc-server-service-account
+  labels:
+    app.kubernetesio/name: server
+    app.kubernetes.io/version: v1
+    app.kubernetes.io/instance: server
+automountServiceAccountToken: true
+
+---
+
+
+apiVersion: getambassador.io/v3alpha1
+kind:  Mapping
+metadata:
+  name:  golang-server-mapping
+spec:
+  hostname: "*"
+  grpc: true
+  tls: istio-upstream
+  prefix: /
+  rewrite: /
+  service: golang-server-service:50051
+
+
+
+
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: golang-server-service
+  labels:
+    app.kubernetesio/name: server
+    app.kubernetes.io/version: v1
+    app.kubernetes.io/instance: server
+spec:
+  selector:
+    app.kubernetesio/name: server
+    app.kubernetes.io/version: v1
+    app.kubernetes.io/instance: server
+  ports:
+    - port: 50051
+      targetPort: 50051
+      name: tcp

@@ -38,13 +38,13 @@ external_services:
   istio:
     root_namespace: ""
   prometheus:
-    url: "http://prometheus-server.default:80"
+    url: "http://prometheus-server.istio-system:80"
   grafana:
     enabled: true
-    in_cluster_url: 'http://grafana.default:80'
+    in_cluster_url: 'http://grafana.istio-system:80'
   tracing:
     enabled: true
-    in_cluster_url: 'http://jaeger-query.default:16685/jaeger'
+    in_cluster_url: 'http://jaeger-query.istio-system:16685/jaeger'
     use_grpc: true
 
 server:

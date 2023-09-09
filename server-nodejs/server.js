@@ -1,16 +1,8 @@
 
 
 
-const tracer = require('dd-trace').init({
-    profiling: true,
-    env: 'snd',
-    service: 'nodejs-server',
-    version: 'v1'
-})
-
 const express = require('express');
 const app = express();
-
 
 var i = 0
 

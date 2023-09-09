@@ -2,16 +2,8 @@
 
 
 
-#  docker build . -t europe-west3-docker.pkg.dev/mojeico/client/get-grpc:v11
-#  docker push europe-west3-docker.pkg.dev/mojeico/client/get-grpc:v11
-
-
-#  docker build . -t europe-west3-docker.pkg.dev/mojeico/client/get-grpc:v22
-#  docker push europe-west3-docker.pkg.dev/mojeico/client/get-grpc:v22
-
-
-#  docker build . -t get-grpc:v22
-#  docker push get-grpc:v22
+#  docker build --platform linux/amd64 . -t  mojeico/golang-get-server:v1
+#  docker push  mojeico/golang-get-server:v1
 
 
 
@@ -29,7 +21,7 @@ COPY . .
 
 # MAC OS M1 APPLE  -----RUN CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build -a -installsuffix cgo -o main ./cmd/app/main.go
 
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -installsuffix cgo  -o main ./main.go
+RUN CGO_ENABLED=0 go build -a -installsuffix cgo  -o main ./main.go
 
 RUN chmod +x ./main
 

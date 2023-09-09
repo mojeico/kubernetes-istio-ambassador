@@ -2,11 +2,9 @@ package main
 
 import (
 	"context"
-	"fmt"
-	"gopkg.in/DataDog/dd-trace-go.v1/ddtrace/tracer"
-	"gopkg.in/DataDog/dd-trace-go.v1/profiler"
 	"log"
 	"net"
+	"os"
 	"time"
 
 	"github.com/google/uuid"
@@ -15,9 +13,7 @@ import (
 )
 
 const (
-	PORT        = ":50051"
-	GET_ADDRESS = "get-server-grpc:50052"
-	//GET_ADDRESS = ":50052"
+	PORT = ":50051"
 )
 
 type TodoServer struct {
@@ -39,11 +35,9 @@ func (s *TodoServer) CreateTodo(ctx context.Context, in *pb.NewTodo) (*pb.Todo, 
 		Id:          uuid.New().String(),
 	}
 
-	log.Println("Hello world!")
+	GetServerAddress := os.Getenv("GET_SERVER_ADDRESS")
 
-	fmt.Println("start RunGRPC - CreateTodo")
-
-	conn, err := grpc.Dial(GET_ADDRESS, grpc.WithInsecure(), grpc.WithBlock())
+	conn, err := grpc.Dial(GetServerAddress, grpc.WithInsecure(), grpc.WithBlock())
 
 	if err != nil {
 		log.Fatalf("did not connect : %v", err)
@@ -76,27 +70,6 @@ func (s *TodoServer) CreateTodo(ctx context.Context, in *pb.NewTodo) (*pb.Todo, 
 }
 
 func main() {
-
-	tracer.Start()
-	defer tracer.Stop()
-
-	err := profiler.Start(
-		profiler.WithProfileTypes(
-			profiler.CPUProfile,
-			profiler.HeapProfile,
-
-			// The profiles below are disabled by
-			// default to keep overhead low, but
-			// can be enabled as needed.
-			// profiler.BlockProfile,
-			// profiler.MutexProfile,
-			// profiler.GoroutineProfile,
-		),
-	)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer profiler.Stop()
 
 	lis, err := net.Listen("tcp", PORT)
 

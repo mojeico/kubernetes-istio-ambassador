@@ -1,8 +1,8 @@
 FROM node:18
 
 
-#  docker build --platform linux/amd64 . -t mojeico/nodejs-server:v1
-#  docker push mojeico/nodejs-server:v1
+#  docker build --platform linux/amd64 . -t mojeico/nodejs-server:v666
+#  docker push mojeico/nodejs-server:v666
 
 
 

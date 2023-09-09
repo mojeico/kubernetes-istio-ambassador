@@ -9,7 +9,7 @@ INSTALL  ISTIOD BY HELM - https://istio.io/latest/docs/setup/install/helm/
 2) helm repo update
 3) kubectl create namespace istio-system
 4) helm install istio-base istio/base -n istio-system
-5) helm install istiod istio/istiod -n istio-system --wait -f ./istio/istio_values.yaml
+5) helm install istiod istio/istiod -n istio-system --wait -f istio-values.yaml
 
 
 helm upgrade istiod -f ./istio/istio_values.yaml -n istio-system  istio/istiod
@@ -35,7 +35,7 @@ https://www.getambassador.io/docs/edge-stack/latest/tutorials/getting-started
 4) helm repo update 
 5) kubectl apply -f https://app.getambassador.io/yaml/edge-stack/3.4.0/aes-crds.yaml
 6) kubectl wait --timeout=90s --for=condition=available deployment emissary-apiext -n emissary-system
-7) helm install edge-stack --namespace ambassador -f ./ambassador/ambassador_value.yaml datawire/edge-stack && \
+7) helm install edge-stack --namespace ambassador -f ambassador-value.yaml datawire/edge-stack && \
    kubectl -n ambassador wait --for condition=available --timeout=90s deploy -lapp.kubernetes.io/instance=edge-stack
 
 

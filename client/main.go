@@ -4,18 +4,15 @@ import (
 	"bufio"
 	"context"
 	"fmt"
+	"github.com/bitly/go-simplejson"
 	"github.com/gorilla/mux"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"google.golang.org/grpc"
-	"gopkg.in/DataDog/dd-trace-go.v1/profiler"
+
 	pb "grpc-client/proto"
 	"log"
 	"net/http"
 	"time"
-)
-
-const (
-	ADDRESS = "server-service:50051"
 )
 
 type TodoTask struct {
@@ -26,27 +23,6 @@ type TodoTask struct {
 
 func main() {
 
-	err := profiler.Start(
-		profiler.WithService("golang-client"),
-		profiler.WithEnv("snd"),
-		profiler.WithVersion("v1"),
-		profiler.WithTags("app:golang-client", "app1:golang-client1"),
-		profiler.WithProfileTypes(
-			profiler.CPUProfile,
-			profiler.HeapProfile,
-			// The profiles below are disabled by default to keep overhead
-			// low, but can be enabled as needed.
-
-			profiler.BlockProfile,
-			profiler.MutexProfile,
-			profiler.GoroutineProfile,
-		),
-	)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer profiler.Stop()
-
 	router := mux.NewRouter()
 
 	router.Path("/metrics").Handler(promhttp.Handler())
@@ -54,8 +30,15 @@ func main() {
 	router.HandleFunc("/api/v1/http", HttpRequest)
 
 	router.HandleFunc("/api/v1/grpc", RunGRPC)
+
+	router.HandleFunc("/api/v1/resp", GetOldResponse)
+
+	router.HandleFunc("/api/v1/resp/new", GetNewResponse)
+
+	router.HandleFunc("/api/v1/header/list/all", GetHeaderList)
+
 	fmt.Println("Serving requests on port 3000")
-	err = http.ListenAndServe(":3000", router)
+	err := http.ListenAndServe(":3000", router)
 	log.Fatal(err)
 }
 
@@ -92,21 +75,19 @@ func HttpRequest(w http.ResponseWriter, r *http.Request) {
 }
 
 func RunGRPC(w http.ResponseWriter, r *http.Request) {
-	//trace, _ := opentracing.StartSpanFromContext(r.Context(), "Handle /api/v1/grpc")
-	//time.Sleep(time.Second / 2)
-	//defer trace.Finish()
 
-	//requestResultCounter.WithLabelValues("server", "200").Inc()
+	//ServerAddress := os.Getenv("SERVER_ADDRESS")
+	ServerAddress := "apidev.np.digitalzenith.io"
 
-	log.Println("Hello world!")
+	fmt.Println("start RunGRPC1")
 
-	fmt.Print("start RunGRPC")
-
-	conn, err := grpc.Dial(ADDRESS, grpc.WithInsecure(), grpc.WithBlock())
+	conn, err := grpc.Dial(ServerAddress, grpc.WithInsecure(), grpc.WithBlock())
 
 	if err != nil {
 		log.Fatalf("did not connect : %v", err)
 	}
+
+	fmt.Println("start RunGRPC2")
 
 	defer conn.Close()
 
@@ -129,5 +110,44 @@ func RunGRPC(w http.ResponseWriter, r *http.Request) {
 
 		log.Printf("messae was sent")
 	}
+
+}
+
+func GetOldResponse(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("Old response ")
+	w.WriteHeader(http.StatusOK)
+}
+
+func GetNewResponse(w http.ResponseWriter, r *http.Request) {
+
+	json := simplejson.New()
+	json.Set("foo", "bar")
+
+	payload, err := json.MarshalJSON()
+
+	if err != nil {
+		log.Println(err)
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(payload)
+}
+
+func GetHeaderList(w http.ResponseWriter, r *http.Request) {
+
+	headers := r.Header
+
+	json := simplejson.New()
+
+	for s, strings := range headers {
+		json.Set(s, strings)
+	}
+	payload, err := json.MarshalJSON()
+
+	if err != nil {
+		log.Println(err)
+	}
+
+	w.Write(payload)
 
 }

@@ -1,7 +1,7 @@
 
 
-#  docker build --platform linux/amd64 . -t mojeico/python-client:v1
-#  docker push mojeico/python-client:v1
+#  docker build --platform linux/amd64 . -t mojeico/python-client:v777
+#  docker push mojeico/python-client:v777
 
 #
 FROM python:3.9

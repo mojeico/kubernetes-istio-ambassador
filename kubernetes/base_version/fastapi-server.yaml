@@ -23,7 +23,7 @@ spec:
     spec:
       containers:
         - name: fastapi-server
-          image: mojeico/fastapi-server:1
+          image:  mojeico/python-server:v777
           ports:
             - name: server-port
               containerPort: 3004
@@ -44,5 +44,7 @@ spec:
       #appProtocol: http
       #protocol: TCP
       targetPort: 3004
+
+
 
 

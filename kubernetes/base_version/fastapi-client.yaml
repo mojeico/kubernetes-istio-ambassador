@@ -23,7 +23,7 @@ spec:
     spec:
       containers:
         - name: fastapi-client
-          image: mojeico/fastapi-client:1
+          image: mojeico/python-client:v777
           ports:
             - name: client-port
               containerPort: 3003
@@ -40,7 +40,17 @@ spec:
     app.kubernetes.io/instance: fastapi-client
   ports:
     - port: 80
-      #default is TCP
-      #appProtocol: http
-      #protocol: TCP
       targetPort: 3003
+
+---
+
+
+apiVersion: getambassador.io/v3alpha1
+kind: Mapping
+metadata:
+  name: fastapi-client-mapping
+spec:
+  hostname: "*"
+  prefix: /test/
+  service: fastapi-client-service:80       # Be explicit about port 80. THIS IS IMPORTANT: see below
+  tls: istio-upstream     # Originate TLS with the mTLS certificate
